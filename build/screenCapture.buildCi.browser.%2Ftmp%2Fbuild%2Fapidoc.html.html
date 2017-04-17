@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/eleith/emailjs#readme"
-
-    >emailjs (v1.0.8)</a>
+    <a href="https://github.com/eleith/emailjs#readme">emailjs (v1.0.8)</a>
 </h1>
 <h4>send text/html emails and attachments (files, streams and strings) from node.js to any smtp server</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.emailjs">module emailjs</a><ol>
 
@@ -2078,9 +2071,9 @@
   this.features = null;
   this._state = SMTPState.NOTCONNECTED;
   this._secure = false;
-  this.loggedin = (options.user &#x26;&#x26; options.password) ? false : true;
+  this.loggedin = (options.user &amp;&amp; options.password) ? false : true;
   this.domain = options.domain || os.hostname();
-  this.host = options.host || &#x27;localhost&#x27;;
+  this.host = options.host || 'localhost';
   this.port = options.port || (options.ssl ? SMTP_SSL_PORT : options.tls ? SMTP_TLS_PORT : SMTP_PORT);
   this.ssl = options.ssl || false;
   this.tls = options.tls || false;
@@ -2141,10 +2134,10 @@
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.close = function (force) {
   if (this.sock) {
     if (force) {
-      log(&#x22;smtp connection destroyed!&#x22;);
+      log("smtp connection destroyed!");
       this.sock.destroy();
     } else {
-      log(&#x22;smtp connection closed.&#x22;);
+      log("smtp connection closed.");
       this.sock.end();
     }
   }
@@ -2158,7 +2151,7 @@
   this._secure = false;
   this.sock = null;
   this.features = null;
-  this.loggedin = !(this.user() &#x26;&#x26; this.password());
+  this.loggedin = !(this.user() &amp;&amp; this.password());
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2173,7 +2166,7 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.command = function (cmd, callback, codes, failed) {
-  codes = Array.isArray(codes) ? codes : typeof(codes) == &#x27;number&#x27; ? [codes] : [250];
+  codes = Array.isArray(codes) ? codes : typeof(codes) == 'number' ? [codes] : [250];
 
   var response = function(err, msg) {
     if (err) {
@@ -2182,9 +2175,9 @@
       if (codes.indexOf(Number(msg.code)) != -1) {
         caller(callback, err, msg.data, msg.message);
       } else {
-        var errorMessage = &#x22;bad response on command &#x27;&#x22; + cmd.split(&#x27; &#x27;)[0] + &#x22;&#x27;&#x22;;
+        var errorMessage = "bad response on command '" + cmd.split(' ')[0] + "'";
         if (msg.message) {
-          errorMessage += &#x27;: &#x27; + msg.message;
+          errorMessage += ': ' + msg.message;
         }
         caller(callback, SMTPError(errorMessage, SMTPError.BADRESPONSE, null, msg.data));
       }
@@ -2223,44 +2216,44 @@
 
   var connected = function(err) {
     if (!err) {
-      log(&#x22;connected: &#x22; + self.host + &#x22;:&#x22; + self.port);
+      log("connected: " + self.host + ":" + self.port);
 
-      if (self.ssl &#x26;&#x26; !self.tls) {
+      if (self.ssl &amp;&amp; !self.tls) {
         // if key/ca/cert was passed in, check if connection is authorized
-        if (typeof(self.ssl) != &#x27;boolean&#x27; &#x26;&#x26; !self.sock.authorized) {
+        if (typeof(self.ssl) != 'boolean' &amp;&amp; !self.sock.authorized) {
           self.close(true);
-          caller(callback, SMTPError(&#x27;could not establish an ssl connection&#x27;, SMTPError.CONNECTIONAUTH, err));
+          caller(callback, SMTPError('could not establish an ssl connection', SMTPError.CONNECTIONAUTH, err));
         } else self._secure = true;
       }
     } else {
       self.close(true);
-      caller(callback, SMTPError(&#x22;could not connect&#x22;, SMTPError.COULDNOTCONNECT, err));
+      caller(callback, SMTPError("could not connect", SMTPError.COULDNOTCONNECT, err));
     }
   };
 
   var response = function(err, msg) {
     if (err) {
-      if (self._state === SMTPState.NOTCONNECTED &#x26;&#x26; !self.sock) {
+      if (self._state === SMTPState.NOTCONNECTED &amp;&amp; !self.sock) {
         return;
       }
       self.close(true);
       caller(callback, err);
-    } else if (msg.code == &#x27;220&#x27;) {
+    } else if (msg.code == '220') {
       log(msg.data);
 
       // might happen first, so no need to wait on connected()
       self._state = SMTPState.CONNECTED;
       caller(callback, null, msg.data);
     } else {
-      log(&#x22;response (data): &#x22; + msg.data);
+      log("response (data): " + msg.data);
       self.quit(function() {
-        caller(callback, SMTPError(&#x22;bad response on connection&#x22;, SMTPError.BADRESPONSE, err, msg.data));
+        caller(callback, SMTPError("bad response on connection", SMTPError.BADRESPONSE, err, msg.data));
       });
     }
   };
 
   self._state = SMTPState.CONNECTING;
-  log(&#x22;connecting: &#x22; + self.host + &#x22;:&#x22; + self.port);
+  log("connecting: " + self.host + ":" + self.port);
 
   if (self.ssl) {
     self.sock = tls.connect(self.port, self.host, self.ssl, connected);
@@ -2272,8 +2265,8 @@
   self.monitor = SMTPResponse.monitor(self.sock, self.timeout, function() {
     self.close(true);
   });
-  self.sock.once(&#x27;response&#x27;, response);
-  self.sock.once(&#x27;error&#x27;, response); // the socket could reset or throw, so let&#x27;s handle it and let the user know
+  self.sock.once('response', response);
+  self.sock.once('error', response); // the socket could reset or throw, so let's handle it and let the user know
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2288,7 +2281,7 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.data = function (callback) {
-  this.command(&#x22;data&#x22;, callback, [354]);
+  this.command("data", callback, [354]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2303,7 +2296,7 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.data_end = function (callback) {
-  this.command(CRLF + &#x22;.&#x22;, callback);
+  this.command(CRLF + ".", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2341,7 +2334,7 @@
       } else {
         self.parse_smtp_features(data);
 
-        if (self.tls &#x26;&#x26; !self._secure) {
+        if (self.tls &amp;&amp; !self._secure) {
           self.starttls(function() {
             self.ehlo(callback, domain);
           });
@@ -2352,7 +2345,7 @@
     };
 
   this.features = {};
-  this.command(&#x22;ehlo &#x22; + (domain || this.domain), response);
+  this.command("ehlo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2400,31 +2393,31 @@
     <li>description and source-code<pre class="apidocCodePre">function emit(type) {
   var er, handler, len, args, i, events, domain;
   var needDomainExit = false;
-  var doError = (type === &#x27;error&#x27;);
+  var doError = (type === 'error');
 
   events = this._events;
   if (events)
-    doError = (doError &#x26;&#x26; events.error == null);
+    doError = (doError &amp;&amp; events.error == null);
   else if (!doError)
     return false;
 
   domain = this.domain;
 
-  // If there is no &#x27;error&#x27; event listener then throw.
+  // If there is no 'error' event listener then throw.
   if (doError) {
     er = arguments[1];
     if (domain) {
       if (!er)
-        er = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event&#x27;);
+        er = new Error('Uncaught, unspecified "error" event');
       er.domainEmitter = this;
       er.domain = domain;
       er.domainThrown = false;
-      domain.emit(&#x27;error&#x27;, er);
+      domain.emit('error', er);
     } else if (er instanceof Error) {
-      throw er; // Unhandled &#x27;error&#x27; event
+      throw er; // Unhandled 'error' event
     } else {
       // At least give some kind of context to the user
-      var err = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event. (&#x27; + er + &#x27;)&#x27;);
+      var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
       err.context = er;
       throw err;
     }
@@ -2436,12 +2429,12 @@
   if (!handler)
     return false;
 
-  if (domain &#x26;&#x26; this !== process) {
+  if (domain &amp;&amp; this !== process) {
     domain.enter();
     needDomainExit = true;
   }
 
-  var isFn = typeof handler === &#x27;function&#x27;;
+  var isFn = typeof handler === 'function';
   len = arguments.length;
   switch (len) {
     // fast cases
@@ -2460,7 +2453,7 @@
     // slower
     default:
       args = new Array(len - 1);
-      for (i = 1; i &#x3c; len; i++)
+      for (i = 1; i &lt; len; i++)
         args[i - 1] = arguments[i];
       emitMany(handler, isFn, this, args);
   }
@@ -2483,7 +2476,7 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function eventNames() {
-  return this._eventsCount &#x3e; 0 ? Reflect.ownKeys(this._events) : [];
+  return this._eventsCount &gt; 0 ? Reflect.ownKeys(this._events) : [];
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2498,8 +2491,8 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.expn = function (address, callback) {
-  // SMTP &#x27;expn&#x27; command -- expands a mailing list.
-  this.command(&#x22;expn &#x22; + address, callback);
+  // SMTP 'expn' command -- expands a mailing list.
+  this.command("expn " + address, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2545,7 +2538,7 @@
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.helo = function (callback, domain) {
 <span class="apidocCodeCommentSpan">  /*
-   * SMTP &#x27;helo&#x27; command.
+   * SMTP 'helo' command.
    * Hostname to send for self command defaults to the FQDN of the local
    * host.
    */
@@ -2561,7 +2554,7 @@
       }
     };
 
-  this.command(&#x22;helo &#x22; + (domain || this.domain), response);
+  this.command("helo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2576,8 +2569,8 @@
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.help = function (callback, args) {
-  // SMTP &#x27;help&#x27; command, returns text from the server
-  this.command(args ? &#x22;help &#x22; + args : &#x22;help&#x22;, callback, [211, 214]);
+  // SMTP 'help' command, returns text from the server
+  this.command(args ? "help " + args : "help", callback, [211, 214]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2597,7 +2590,7 @@
   if (events) {
     const evlistener = events[type];
 
-    if (typeof evlistener === &#x27;function&#x27;) {
+    if (typeof evlistener === 'function') {
       return 1;
     } else if (evlistener) {
       return evlistener.length;
@@ -2629,7 +2622,7 @@
     evlistener = events[type];
     if (!evlistener)
       ret = [];
-    else if (typeof evlistener === &#x27;function&#x27;)
+    else if (typeof evlistener === 'function')
       ret = [evlistener];
     else
       ret = arrayClone(evlistener, evlistener.length);
@@ -2659,10 +2652,10 @@
       password: password ? function() {
         return password;
       } : self.password,
-      method: options &#x26;&#x26; options.method ? options.method.toUpperCase() : &#x27;&#x27;
+      method: options &amp;&amp; options.method ? options.method.toUpperCase() : ''
     },
 
-    domain = options &#x26;&#x26; options.domain ? options.domain : this.domain,
+    domain = options &amp;&amp; options.domain ? options.domain : this.domain,
 
     initiate = function(err, data) {
       if (err) {
@@ -2686,23 +2679,23 @@
       var method = null,
 
         encode_cram_md5 = function(challenge) {
-          challenge = (new Buffer(challenge, &#x22;base64&#x22;)).toString(&#x22;ascii&#x22;);
+          challenge = (new Buffer(challenge, "base64")).toString("ascii");
 
-          var hmac = crypto.createHmac(&#x27;md5&#x27;, login.password());
+          var hmac = crypto.createHmac('md5', login.password());
           hmac.update(challenge);
 
-          return (new Buffer(login.user() + &#x22; &#x22; + hmac.digest(&#x27;hex&#x27;)).toString(&#x22;base64&#x22;));
+          return (new Buffer(login.user() + " " + hmac.digest('hex')).toString("base64"));
         },
 
         encode_plain = function() {
-          return (new Buffer(&#x22;\u0000&#x22; + login.user() + &#x22;\u0000&#x22; + login.password())).toString(&#x22;base64&#x22;);
+          return (new Buffer("\u0000" + login.user() + "\u0000" + login.password())).toString("base64");
         },
 
         encode_xoauth2 = function() {
-          // console.log(&#x22;user=&#x22; + login.user() + &#x22;\1auth=Bearer &#x22; + login.password()+&#x22;\1\1&#x22;);
+          // console.log("user=" + login.user() + "\1auth=Bearer " + login.password()+"\1\1");
           // see: https://developers.google.com/gmail/xoauth2_protocol
-          return (new Buffer(&#x22;user=&#x22; + login.user() + &#x22;\u0001auth=Bearer &#x22; + login.password() + &#x22;\u0001\u0001&#x22;)).toString(&#x22;base64
-&#x22;);
+          return (new Buffer("user=" + login.user() + "\u0001auth=Bearer " + login.password() + "\u0001\u0001")).toString("base64
+");
         };
 
       // List of authentication methods we support: from preferred to
@@ -2710,8 +2703,8 @@
       if (!method) {
         var preferred = self.authentication;
 
-        for (var i = 0; i &#x3c; preferred.length; i++) {
-          if ((self.features.auth || &#x22;&#x22;).indexOf(preferred[i]) != -1) {
+        for (var i = 0; i &lt; preferred.length; i++) {
+          if ((self.features.auth || "").indexOf(preferred[i]) != -1) {
             method = preferred[i];
             break;
           }
@@ -2721,8 +2714,8 @@
       // handle bad responses from command differently
       var failed = function(err, data) {
         self.loggedin = false;
-        self.close(); // if auth is bad, close the connection, it won&#x27;t get better by itself
-        caller(callback, SMTPError(&#x27;authorization.failed&#x27;, SMTPError.AUTHFAILED, err, data));
+        self.close(); // if auth is bad, close the connection, it won't get better by itself
+        caller(callback, SMTPError('authorization.failed', SMTPError.AUTHFAILED, err, data));
       };
 
       var response = function(err, data) {
@@ -2741,7 +2734,7 @@
           if (method == AUTH_METHODS.CRAM_MD5) {
             self.command(encode_cram_md5(msg), response, [235, 503]);
           } else if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.password())).toString(&#x22;base64&#x22;), response, [235, 503]);
+            self.command((new Buffer(login.password())).toString("base64"), response, [235, 503]);
           }
         }
       };
@@ -2751,22 +2744,22 @@
           failed(err, data);
         } else {
           if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.user())).toString(&#x22;base64&#x22;), attempt, [334]);
+            self.command((new Buffer(login.user())).toString("base64"), attempt, [334]);
           }
         }
       };
 
-      if (method == AUTH_METHODS.CRAM_MD5) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.CRAM_MD5, attempt, [334]);
+      if (method == AUTH_METHODS.CRAM_MD5) self.command("AUTH " + AUTH_METHODS.CRAM_MD5, attempt, [334]);
 
-      else if (method == AUTH_METHODS.LOGIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.LOGIN, attempt_user, [334]);
+      else if (method == AUTH_METHODS.LOGIN) self.command("AUTH " + AUTH_METHODS.LOGIN, attempt_user, [334]);
 
-      else if (method == AUTH_METHODS.PLAIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.PLAIN + &#x22; &#x22; + encode_plain(login.user(), login.
+      else if (method == AUTH_METHODS.PLAIN) self.command("AUTH " + AUTH_METHODS.PLAIN + " " + encode_plain(login.user(), login.
 password()), response, [235, 503]);
 
-      else if (method == AUTH_METHODS.XOAUTH2) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.XOAUTH2 + &#x22; &#x22; + encode_xoauth2(login.user(),
+      else if (method == AUTH_METHODS.XOAUTH2) self.command("AUTH " + AUTH_METHODS.XOAUTH2 + " " + encode_xoauth2(login.user(),
 login.password()), response, [235, 503]);
 
-      else if (!method) caller(callback, SMTPError(&#x27;no form of authorization supported&#x27;, SMTPError.AUTHNOTSU ...</pre></li>
+      else if (!method) caller(callback, SMTPError('no form of authorization supported', SMTPError.AUTHNOTSU ...</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
 
@@ -2780,7 +2773,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.mail = function (callback, from) {
-  this.command(&#x22;mail FROM:&#x22; + from, callback);
+  this.command("mail FROM:" + from, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2811,7 +2804,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.noop = function (callback) {
-  this.send(&#x22;noop&#x22;, callback);
+  this.send("noop", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2826,8 +2819,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function once(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.on(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -2847,10 +2840,10 @@ login.password()), response, [235, 503]);
   var self = this;
 
   //  According to RFC1869 some (badly written)
-  //  MTA&#x27;s will disconnect on an ehlo. Toss an exception if
+  //  MTA's will disconnect on an ehlo. Toss an exception if
   //  that happens -ddm
 
-  data.split(&#x22;\n&#x22;).forEach(function(ext) {
+  data.split("\n").forEach(function(ext) {
     var parse = ext.match(/^(?:\d+[\-=]?)\s*?([^\s]+)(?:\s+(.*)\s*?)?$/);
 
     // To be able to communicate with as many SMTP servers as possible,
@@ -2862,9 +2855,9 @@ login.password()), response, [235, 503]);
 
     if (parse) {
       // RFC 1869 requires a space between ehlo keyword and parameters.
-      // It&#x27;s actually stricter, in that only spaces are allowed between
+      // It's actually stricter, in that only spaces are allowed between
       // parameters, but were not going to check for that here.  Note
-      // that the space isn&#x27;t present if there are no parameters.
+      // that the space isn't present if there are no parameters.
       self.features[parse[1].toLowerCase()] = parse[2] || true;
     }
   });
@@ -2899,8 +2892,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function prependOnceListener(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.prependListener(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -2923,7 +2916,7 @@ login.password()), response, [235, 503]);
       self.close();
     };
 
-  this.command(&#x22;quit&#x22;, response, [221, 250]);
+  this.command("quit", response, [221, 250]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2938,7 +2931,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.rcpt = function (callback, to) {
-  this.command(&#x22;RCPT TO:&#x22; + to, callback, [250, 251]);
+  this.command("RCPT TO:" + to, callback, [250, 251]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2976,12 +2969,12 @@ login.password()), response, [235, 503]);
   // emit removeListener for all listeners on all events
   if (arguments.length === 0) {
     var keys = Object.keys(events);
-    for (var i = 0, key; i &#x3c; keys.length; ++i) {
+    for (var i = 0, key; i &lt; keys.length; ++i) {
       key = keys[i];
-      if (key === &#x27;removeListener&#x27;) continue;
+      if (key === 'removeListener') continue;
       this.removeAllListeners(key);
     }
-    this.removeAllListeners(&#x27;removeListener&#x27;);
+    this.removeAllListeners('removeListener');
     this._events = new EventHandlers();
     this._eventsCount = 0;
     return this;
@@ -2989,7 +2982,7 @@ login.password()), response, [235, 503]);
 
   listeners = events[type];
 
-  if (typeof listeners === &#x27;function&#x27;) {
+  if (typeof listeners === 'function') {
     this.removeListener(type, listeners);
   } else if (listeners) {
     // LIFO order
@@ -3015,8 +3008,8 @@ login.password()), response, [235, 503]);
     <li>description and source-code<pre class="apidocCodePre">function removeListener(type, listener) {
   var list, events, position, i, originalListener;
 
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
 
   events = this._events;
   if (!events)
@@ -3032,12 +3025,12 @@ login.password()), response, [235, 503]);
     else {
       delete events[type];
       if (events.removeListener)
-        this.emit(&#x27;removeListener&#x27;, type, list.listener || listener);
+        this.emit('removeListener', type, list.listener || listener);
     }
-  } else if (typeof list !== &#x27;function&#x27;) {
+  } else if (typeof list !== 'function') {
     position = -1;
 
-    for (i = list.length; i-- &#x3e; 0;) {
+    for (i = list.length; i-- &gt; 0;) {
       if (list[i] === listener || list[i].listener === listener) {
         originalListener = list[i].listener;
         position = i;
@@ -3045,7 +3038,7 @@ login.password()), response, [235, 503]);
       }
     }
 
-    if (position &#x3c; 0)
+    if (position &lt; 0)
       return this;
 
     if (list.length === 1) {
@@ -3061,7 +3054,7 @@ login.password()), response, [235, 503]);
     }
 
     if (events.removeListener)
-      this.emit(&#x27;removeListener&#x27;, type, originalListener || listener);
+      this.emit('removeListener', type, originalListener || listener);
   }
 
   return this;
@@ -3079,7 +3072,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.rset = function (callback) {
-  this.command(&#x22;rset&#x22;, callback);
+  this.command("rset", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3096,7 +3089,7 @@ login.password()), response, [235, 503]);
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.send = function (str, callback) {
   var self = this;
 
-  if (self.sock &#x26;&#x26; self._state == SMTPState.CONNECTED) {
+  if (self.sock &amp;&amp; self._state == SMTPState.CONNECTED) {
     log(str);
 
     var response = function(err, msg) {
@@ -3108,11 +3101,11 @@ login.password()), response, [235, 503]);
       }
     };
 
-    self.sock.once(&#x27;response&#x27;, response);
+    self.sock.once('response', response);
     self.sock.write(str);
   } else {
     self.close(true);
-    caller(callback, SMTPError(&#x27;no connection has been established&#x27;, SMTPError.NOCONNECTION));
+    caller(callback, SMTPError('no connection has been established', SMTPError.NOCONNECTION));
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -3128,8 +3121,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function setMaxListeners(n) {
-  if (typeof n !== &#x27;number&#x27; || n &#x3c; 0 || isNaN(n))
-    throw new TypeError(&#x27;&#x22;n&#x22; argument must be a positive number&#x27;);
+  if (typeof n !== 'number' || n &lt; 0 || isNaN(n))
+    throw new TypeError('"n" argument must be a positive number');
   this._maxListeners = n;
   return this;
 }</pre></li>
@@ -3150,7 +3143,7 @@ login.password()), response, [235, 503]);
 
     response = function(err, msg) {
       if (err) {
-        err.message += &#x22; while establishing a starttls session&#x22;;
+        err.message += " while establishing a starttls session";
         caller(callback, err);
       } else {
         // support new API
@@ -3160,7 +3153,7 @@ login.password()), response, [235, 503]);
             isServer: false // older versions of node (0.12), do not default to false properly...
           });
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -3190,7 +3183,7 @@ login.password()), response, [235, 503]);
           };
 
           //secured_socket = starttls.secure(self.sock, self.tls, secured);
-          var starttls = require(&#x27;starttls&#x27;);
+          var starttls = require('starttls');
           secured_socket = starttls({
             socket: self.sock,
             host: self.host,
@@ -3200,7 +3193,7 @@ login.password()), response, [235, 503]);
               false)
           }, secured).cleartext;
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -3208,7 +3201,7 @@ login.password()), response, [235, 503]);
       }
     };
 
-  this.command(&#x22;starttls&#x22;, response, [220]);
+  this.command("starttls", response, [220]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3238,8 +3231,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">SMTP.SMTP.prototype.verify = function (address, callback) {
-  // SMTP &#x27;verify&#x27; command -- checks for address validity.&#x22;&#x22;&#x22;
-  this.command(&#x22;vrfy &#x22; + address, callback, [250, 251, 252]);
+  // SMTP 'verify' command -- checks for address validity."""
+  this.command("vrfy " + address, callback, [250, 251, 252]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3281,10 +3274,10 @@ login.password()), response, [235, 503]);
    this.alternative  = null;
    var now = new Date();
    this.header       = {
-      &#x22;message-id&#x22;:&#x22;&#x3c;&#x22; + now.getTime() + &#x22;.&#x22; + (counter++) + &#x22;.&#x22; + process.pid + &#x22;@&#x22; + os.hostname() +&#x22;&#x3e;&#x22;,
-      &#x22;date&#x22;:moment().locale(&#x27;en&#x27;).format(&#x22;ddd, DD MMM YYYY HH:mm:ss ZZ&#x22;)
+      "message-id":"&lt;" + now.getTime() + "." + (counter++) + "." + process.pid + "@" + os.hostname() +"&gt;",
+      "date":moment().locale('en').format("ddd, DD MMM YYYY HH:mm:ss ZZ")
    };
-   this.content      = &#x22;text/plain; charset=utf-8&#x22;;
+   this.content      = "text/plain; charset=utf-8";
 
    for(var header in headers)
    {
@@ -3293,25 +3286,25 @@ login.password()), response, [235, 503]);
       {
          this.content = headers[header];
       }
-      else if(header == &#x27;text&#x27;)
+      else if(header == 'text')
       {
          this.text = headers[header];
       }
-      else if(header == &#x22;attachment&#x22; &#x26;&#x26; typeof (headers[header]) == &#x22;object&#x22;)
+      else if(header == "attachment" &amp;&amp; typeof (headers[header]) == "object")
       {
          if(Array.isArray(headers[header])) {
             var that = this;
 
-            for (var i = 0, l = headers[header].length; i &#x3c; l; i++) {
+            for (var i = 0, l = headers[header].length; i &lt; l; i++) {
               this.attach(headers[header][i]);
             }
          } else {
             this.attach(headers[header]);
          }
       }
-      else if(header == &#x27;subject&#x27;)
+      else if(header == 'subject')
       {
-         this.header.subject = mimelib.encodeMimeWord(headers.subject, &#x27;Q&#x27;, &#x27;utf-8&#x27;);
+         this.header.subject = mimelib.encodeMimeWord(headers.subject, 'Q', 'utf-8');
       }
       else if(/^(cc|bcc|to|from)/i.test(header))
       {
@@ -3341,17 +3334,17 @@ login.password()), response, [235, 503]);
 {
 <span class="apidocCodeCommentSpan">   /*
       legacy support, will remove eventually...
-      arguments -&#x3e; (path, type, name, headers)
+      arguments -&gt; (path, type, name, headers)
    */
-</span>   if (arguments.length &#x3e; 1)
+</span>   if (arguments.length &gt; 1)
      options = {path:options, type:arguments[1], name:arguments[2]};
 
    // sender can specify an attachment as an alternative
    if(options.alternative)
    {
       this.alternative           = options;
-      this.alternative.charset   = options.charset || &#x22;utf-8&#x22;;
-      this.alternative.type      = options.type || &#x22;text/html&#x22;;
+      this.alternative.charset   = options.charset || "utf-8";
+      this.alternative.type      = options.type || "text/html";
       this.alternative.inline    = true;
    }
    else
@@ -3376,8 +3369,8 @@ login.password()), response, [235, 503]);
    this.alternative =
    {
       data:    html,
-      charset: charset || &#x22;utf-8&#x22;,
-      type:    &#x22;text/html&#x22;,
+      charset: charset || "utf-8",
+      type:    "text/html",
       inline:  true
    };
 
@@ -3397,7 +3390,7 @@ login.password()), response, [235, 503]);
     <ul>
     <li>description and source-code<pre class="apidocCodePre">message.Message.prototype.read = function (callback)
 {
-   var buffer = &#x22;&#x22;;
+   var buffer = "";
 
    var capture = function(data)
    {
@@ -3411,9 +3404,9 @@ login.password()), response, [235, 503]);
 
    var str = this.stream();
 
-   str.on(&#x27;data&#x27;, capture);
-   str.on(&#x27;end&#x27;, output);
-   str.on(&#x27;error&#x27;, output);
+   str.on('data', capture);
+   str.on('end', output);
+   str.on('error', output);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3449,11 +3442,11 @@ login.password()), response, [235, 503]);
 
    if(!self.header.from)
    {
-      callback(false, &#x22;message does not have a valid sender&#x22;);
+      callback(false, "message does not have a valid sender");
    }
    if(!(self.header.to || self.header.cc || self.header.bcc))
    {
-      callback(false, &#x22;message does not have a valid recipient&#x22;);
+      callback(false, "message does not have a valid recipient");
    }
    else if(self.attachments.length === 0)
    {
@@ -3468,22 +3461,22 @@ login.password()), response, [235, 503]);
       {
          if(attachment.path)
          {
-            // migrating path-&#x3e;fs for existsSync)
+            // migrating path-&gt;fs for existsSync)
             if(!(fs.existsSync || path.existsSync)(attachment.path))
-               failed.push(attachment.path + &#x22; does not exist&#x22;);
+               failed.push(attachment.path + " does not exist");
          }
          else if(attachment.stream)
          {
             if(!attachment.stream.readable)
-               failed.push(&#x22;attachment stream is not readable&#x22;);
+               failed.push("attachment stream is not readable");
          }
          else if(!attachment.data)
          {
-            failed.push(&#x22;attachment has no data associated with it&#x22;);
+            failed.push("attachment has no data associated with it");
          }
       });
 
-      callback(failed.length === 0, failed.join(&#x22;, &#x22;));
+      callback(failed.length === 0, failed.join(", "));
    }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -3614,8 +3607,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">server.Client.prototype._isAttachmentInlinedHtml = function (attachment) {
-	   return attachment &#x26;&#x26;
-		  (attachment.data || attachment.path) &#x26;&#x26;
+	   return attachment &amp;&amp;
+		  (attachment.data || attachment.path) &amp;&amp;
 		   attachment.alternative === true;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -3641,7 +3634,7 @@ login.password()), response, [235, 503]);
       if(self.smtp.state() == smtp.state.NOTCONNECTED)
          self._connect(self.queue[0]);
 
-      else if(self.smtp.state() == smtp.state.CONNECTED &#x26;&#x26; !self.sending &#x26;&#x26; self.ready)
+      else if(self.smtp.state() == smtp.state.CONNECTED &amp;&amp; !self.sending &amp;&amp; self.ready)
          self._sendmail(self.queue.shift());
    }
    // wait around 1 seconds in case something does come in, otherwise close out SMTP connection if still open
@@ -3701,7 +3694,7 @@ login.password()), response, [235, 503]);
    var self = this;
    var from = stack.returnPath || stack.from;
    self.sending = true;
-   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), &#x27;&#x3c;&#x27; + from + &#x27;&#x3e;&#x27;);
+   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), '&lt;' + from + '&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3719,12 +3712,12 @@ login.password()), response, [235, 503]);
 {
    var self = this, stream = stack.message.stream();
 
-   stream.on(&#x27;data&#x27;, function(data) { self.smtp.message(data); });
-   stream.on(&#x27;end&#x27;, function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
+   stream.on('data', function(data) { self.smtp.message(data); });
+   stream.on('end', function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
 
    // there is no way to cancel a message while in the DATA portion, so we have to close the socket to prevent
    // a bad email from going out
-   stream.on(&#x27;error&#x27;, function(err) { self.smtp.close(); self._senddone(err, stack); });
+   stream.on('error', function(err) { self.smtp.close(); self._senddone(err, stack); });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3741,7 +3734,7 @@ login.password()), response, [235, 503]);
     <li>description and source-code<pre class="apidocCodePre">server.Client.prototype._sendrcpt = function (stack)
 {
    var self = this, to = stack.to.shift().address;
-   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), &#x27;&#x3c;&#x27;+ to +&#x27;&#x3e;&#x27;);
+   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), '&lt;'+ to +'&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3760,7 +3753,7 @@ login.password()), response, [235, 503]);
    var self   = this;
    var check= function(err)
    {
-      if(!err &#x26;&#x26; next)
+      if(!err &amp;&amp; next)
       {
          next.apply(self, [stack]);
       }
@@ -3791,9 +3784,9 @@ login.password()), response, [235, 503]);
    var self = this;
 
    if(!(msg instanceof message.Message)
-       &#x26;&#x26; msg.from
-       &#x26;&#x26; (msg.to || msg.cc || msg.bcc)
-       &#x26;&#x26; (msg.text || this._containsInlinedHtml(msg.attachment)))
+       &amp;&amp; msg.from
+       &amp;&amp; (msg.to || msg.cc || msg.bcc)
+       &amp;&amp; (msg.text || this._containsInlinedHtml(msg.attachment)))
       msg = message.create(msg);
 
    if(msg instanceof message.Message)
@@ -3816,8 +3809,8 @@ login.password()), response, [235, 503]);
             if(msg.header.bcc)
                stack.to = stack.to.concat(addressparser(msg.header.bcc));
 
-            if(msg.header[&#x27;return-path&#x27;] &#x26;&#x26; addressparser(msg.header[&#x27;return-path&#x27;]).length)
-              stack.returnPath = addressparser(msg.header[&#x27;return-path&#x27;])[0].address;
+            if(msg.header['return-path'] &amp;&amp; addressparser(msg.header['return-path']).length)
+              stack.returnPath = addressparser(msg.header['return-path'])[0].address;
 
             self.queue.push(stack);
             self._poll();
@@ -3827,7 +3820,7 @@ login.password()), response, [235, 503]);
       });
    }
    else
-      callback(new Error(&#x22;message is not a valid Message instance&#x22;), msg);
+      callback(new Error("message is not a valid Message instance"), msg);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -3852,11 +3845,11 @@ login.password()), response, [235, 503]);
 ## EXAMPLE USAGE - text only emails
 
 ```javascript
-var email 	= require(&#x22;./path/to/emailjs/email&#x22;);
+var email 	= require("./path/to/emailjs/email");
 var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
@@ -3902,9 +3895,9 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
   this.features = null;
   this._state = SMTPState.NOTCONNECTED;
   this._secure = false;
-  this.loggedin = (options.user &#x26;&#x26; options.password) ? false : true;
+  this.loggedin = (options.user &amp;&amp; options.password) ? false : true;
   this.domain = options.domain || os.hostname();
-  this.host = options.host || &#x27;localhost&#x27;;
+  this.host = options.host || 'localhost';
   this.port = options.port || (options.ssl ? SMTP_SSL_PORT : options.tls ? SMTP_TLS_PORT : SMTP_PORT);
   this.ssl = options.ssl || false;
   this.tls = options.tls || false;
@@ -3951,9 +3944,9 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
   this.features = null;
   this._state = SMTPState.NOTCONNECTED;
   this._secure = false;
-  this.loggedin = (options.user &#x26;&#x26; options.password) ? false : true;
+  this.loggedin = (options.user &amp;&amp; options.password) ? false : true;
   this.domain = options.domain || os.hostname();
-  this.host = options.host || &#x27;localhost&#x27;;
+  this.host = options.host || 'localhost';
   this.port = options.port || (options.ssl ? SMTP_SSL_PORT : options.tls ? SMTP_TLS_PORT : SMTP_PORT);
   this.ssl = options.ssl || false;
   this.tls = options.tls || false;
@@ -4019,10 +4012,10 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
     <li>description and source-code<pre class="apidocCodePre">close = function (force) {
   if (this.sock) {
     if (force) {
-      log(&#x22;smtp connection destroyed!&#x22;);
+      log("smtp connection destroyed!");
       this.sock.destroy();
     } else {
-      log(&#x22;smtp connection closed.&#x22;);
+      log("smtp connection closed.");
       this.sock.end();
     }
   }
@@ -4036,7 +4029,7 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
   this._secure = false;
   this.sock = null;
   this.features = null;
-  this.loggedin = !(this.user() &#x26;&#x26; this.password());
+  this.loggedin = !(this.user() &amp;&amp; this.password());
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4051,7 +4044,7 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">command = function (cmd, callback, codes, failed) {
-  codes = Array.isArray(codes) ? codes : typeof(codes) == &#x27;number&#x27; ? [codes] : [250];
+  codes = Array.isArray(codes) ? codes : typeof(codes) == 'number' ? [codes] : [250];
 
   var response = function(err, msg) {
     if (err) {
@@ -4060,9 +4053,9 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
       if (codes.indexOf(Number(msg.code)) != -1) {
         caller(callback, err, msg.data, msg.message);
       } else {
-        var errorMessage = &#x22;bad response on command &#x27;&#x22; + cmd.split(&#x27; &#x27;)[0] + &#x22;&#x27;&#x22;;
+        var errorMessage = "bad response on command '" + cmd.split(' ')[0] + "'";
         if (msg.message) {
-          errorMessage += &#x27;: &#x27; + msg.message;
+          errorMessage += ': ' + msg.message;
         }
         caller(callback, SMTPError(errorMessage, SMTPError.BADRESPONSE, null, msg.data));
       }
@@ -4101,44 +4094,44 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
 
   var connected = function(err) {
     if (!err) {
-      log(&#x22;connected: &#x22; + self.host + &#x22;:&#x22; + self.port);
+      log("connected: " + self.host + ":" + self.port);
 
-      if (self.ssl &#x26;&#x26; !self.tls) {
+      if (self.ssl &amp;&amp; !self.tls) {
         // if key/ca/cert was passed in, check if connection is authorized
-        if (typeof(self.ssl) != &#x27;boolean&#x27; &#x26;&#x26; !self.sock.authorized) {
+        if (typeof(self.ssl) != 'boolean' &amp;&amp; !self.sock.authorized) {
           self.close(true);
-          caller(callback, SMTPError(&#x27;could not establish an ssl connection&#x27;, SMTPError.CONNECTIONAUTH, err));
+          caller(callback, SMTPError('could not establish an ssl connection', SMTPError.CONNECTIONAUTH, err));
         } else self._secure = true;
       }
     } else {
       self.close(true);
-      caller(callback, SMTPError(&#x22;could not connect&#x22;, SMTPError.COULDNOTCONNECT, err));
+      caller(callback, SMTPError("could not connect", SMTPError.COULDNOTCONNECT, err));
     }
   };
 
   var response = function(err, msg) {
     if (err) {
-      if (self._state === SMTPState.NOTCONNECTED &#x26;&#x26; !self.sock) {
+      if (self._state === SMTPState.NOTCONNECTED &amp;&amp; !self.sock) {
         return;
       }
       self.close(true);
       caller(callback, err);
-    } else if (msg.code == &#x27;220&#x27;) {
+    } else if (msg.code == '220') {
       log(msg.data);
 
       // might happen first, so no need to wait on connected()
       self._state = SMTPState.CONNECTED;
       caller(callback, null, msg.data);
     } else {
-      log(&#x22;response (data): &#x22; + msg.data);
+      log("response (data): " + msg.data);
       self.quit(function() {
-        caller(callback, SMTPError(&#x22;bad response on connection&#x22;, SMTPError.BADRESPONSE, err, msg.data));
+        caller(callback, SMTPError("bad response on connection", SMTPError.BADRESPONSE, err, msg.data));
       });
     }
   };
 
   self._state = SMTPState.CONNECTING;
-  log(&#x22;connecting: &#x22; + self.host + &#x22;:&#x22; + self.port);
+  log("connecting: " + self.host + ":" + self.port);
 
   if (self.ssl) {
     self.sock = tls.connect(self.port, self.host, self.ssl, connected);
@@ -4150,8 +4143,8 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
   self.monitor = SMTPResponse.monitor(self.sock, self.timeout, function() {
     self.close(true);
   });
-  self.sock.once(&#x27;response&#x27;, response);
-  self.sock.once(&#x27;error&#x27;, response); // the socket could reset or throw, so let&#x27;s handle it and let the user know
+  self.sock.once('response', response);
+  self.sock.once('error', response); // the socket could reset or throw, so let's handle it and let the user know
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
  - auth access to an SMTP Server
@@ -4160,11 +4153,11 @@ var server 	= email.<span class="apidocCodeKeywordSpan">server.connect</span>({
 ## EXAMPLE USAGE - text only emails
 
 ```javascript
-var email 	= require(&#x22;./path/to/emailjs/email&#x22;);
+var email 	= require("./path/to/emailjs/email");
 var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
@@ -4182,7 +4175,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">data = function (callback) {
-  this.command(&#x22;data&#x22;, callback, [354]);
+  this.command("data", callback, [354]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4197,7 +4190,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">data_end = function (callback) {
-  this.command(CRLF + &#x22;.&#x22;, callback);
+  this.command(CRLF + ".", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4235,7 +4228,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
       } else {
         self.parse_smtp_features(data);
 
-        if (self.tls &#x26;&#x26; !self._secure) {
+        if (self.tls &amp;&amp; !self._secure) {
           self.starttls(function() {
             self.ehlo(callback, domain);
           });
@@ -4246,7 +4239,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     };
 
   this.features = {};
-  this.command(&#x22;ehlo &#x22; + (domain || this.domain), response);
+  this.command("ehlo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4294,31 +4287,31 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     <li>description and source-code<pre class="apidocCodePre">function emit(type) {
   var er, handler, len, args, i, events, domain;
   var needDomainExit = false;
-  var doError = (type === &#x27;error&#x27;);
+  var doError = (type === 'error');
 
   events = this._events;
   if (events)
-    doError = (doError &#x26;&#x26; events.error == null);
+    doError = (doError &amp;&amp; events.error == null);
   else if (!doError)
     return false;
 
   domain = this.domain;
 
-  // If there is no &#x27;error&#x27; event listener then throw.
+  // If there is no 'error' event listener then throw.
   if (doError) {
     er = arguments[1];
     if (domain) {
       if (!er)
-        er = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event&#x27;);
+        er = new Error('Uncaught, unspecified "error" event');
       er.domainEmitter = this;
       er.domain = domain;
       er.domainThrown = false;
-      domain.emit(&#x27;error&#x27;, er);
+      domain.emit('error', er);
     } else if (er instanceof Error) {
-      throw er; // Unhandled &#x27;error&#x27; event
+      throw er; // Unhandled 'error' event
     } else {
       // At least give some kind of context to the user
-      var err = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event. (&#x27; + er + &#x27;)&#x27;);
+      var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
       err.context = er;
       throw err;
     }
@@ -4330,12 +4323,12 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
   if (!handler)
     return false;
 
-  if (domain &#x26;&#x26; this !== process) {
+  if (domain &amp;&amp; this !== process) {
     domain.enter();
     needDomainExit = true;
   }
 
-  var isFn = typeof handler === &#x27;function&#x27;;
+  var isFn = typeof handler === 'function';
   len = arguments.length;
   switch (len) {
     // fast cases
@@ -4354,7 +4347,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     // slower
     default:
       args = new Array(len - 1);
-      for (i = 1; i &#x3c; len; i++)
+      for (i = 1; i &lt; len; i++)
         args[i - 1] = arguments[i];
       emitMany(handler, isFn, this, args);
   }
@@ -4365,22 +4358,22 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
   return true;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    var line = buffer.replace(&#x22;\r&#x22;, &#x27;&#x27;);
+    var line = buffer.replace("\r", '');
 
     if(!line.trim().split(/\n/).pop().match(/^(\d{3})\s/))
         return;
 
     var match = line ? line.match(/(\d+)\s?(.*)/) : null;
 
-    stream.<span class="apidocCodeKeywordSpan">emit</span>(&#x27;response&#x27;, null, match ? {code:match[1], message:match[2],
+    stream.<span class="apidocCodeKeywordSpan">emit</span>('response', null, match ? {code:match[1], message:match[2],
 data:line} : {code:-1, data:line});
-    buffer = &#x27;&#x27;;
+    buffer = '';
   }
 },
 
 error = function(err)
 {
-  stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection encountered an error&#x27;, SMTPError.ERROR, err));
+  stream.emit('response', SMTPError('connection encountered an error', SMTPError.ERROR, err));
 ...</pre></li>
     </ul>
 
@@ -4394,7 +4387,7 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function eventNames() {
-  return this._eventsCount &#x3e; 0 ? Reflect.ownKeys(this._events) : [];
+  return this._eventsCount &gt; 0 ? Reflect.ownKeys(this._events) : [];
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4409,8 +4402,8 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">expn = function (address, callback) {
-  // SMTP &#x27;expn&#x27; command -- expands a mailing list.
-  this.command(&#x22;expn &#x22; + address, callback);
+  // SMTP 'expn' command -- expands a mailing list.
+  this.command("expn " + address, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4456,7 +4449,7 @@ error = function(err)
     <ul>
     <li>description and source-code<pre class="apidocCodePre">helo = function (callback, domain) {
 <span class="apidocCodeCommentSpan">  /*
-   * SMTP &#x27;helo&#x27; command.
+   * SMTP 'helo' command.
    * Hostname to send for self command defaults to the FQDN of the local
    * host.
    */
@@ -4472,7 +4465,7 @@ error = function(err)
       }
     };
 
-  this.command(&#x22;helo &#x22; + (domain || this.domain), response);
+  this.command("helo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4487,8 +4480,8 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">help = function (callback, args) {
-  // SMTP &#x27;help&#x27; command, returns text from the server
-  this.command(args ? &#x22;help &#x22; + args : &#x22;help&#x22;, callback, [211, 214]);
+  // SMTP 'help' command, returns text from the server
+  this.command(args ? "help " + args : "help", callback, [211, 214]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4508,7 +4501,7 @@ error = function(err)
   if (events) {
     const evlistener = events[type];
 
-    if (typeof evlistener === &#x27;function&#x27;) {
+    if (typeof evlistener === 'function') {
       return 1;
     } else if (evlistener) {
       return evlistener.length;
@@ -4540,7 +4533,7 @@ error = function(err)
     evlistener = events[type];
     if (!evlistener)
       ret = [];
-    else if (typeof evlistener === &#x27;function&#x27;)
+    else if (typeof evlistener === 'function')
       ret = [evlistener];
     else
       ret = arrayClone(evlistener, evlistener.length);
@@ -4570,10 +4563,10 @@ error = function(err)
       password: password ? function() {
         return password;
       } : self.password,
-      method: options &#x26;&#x26; options.method ? options.method.toUpperCase() : &#x27;&#x27;
+      method: options &amp;&amp; options.method ? options.method.toUpperCase() : ''
     },
 
-    domain = options &#x26;&#x26; options.domain ? options.domain : this.domain,
+    domain = options &amp;&amp; options.domain ? options.domain : this.domain,
 
     initiate = function(err, data) {
       if (err) {
@@ -4597,23 +4590,23 @@ error = function(err)
       var method = null,
 
         encode_cram_md5 = function(challenge) {
-          challenge = (new Buffer(challenge, &#x22;base64&#x22;)).toString(&#x22;ascii&#x22;);
+          challenge = (new Buffer(challenge, "base64")).toString("ascii");
 
-          var hmac = crypto.createHmac(&#x27;md5&#x27;, login.password());
+          var hmac = crypto.createHmac('md5', login.password());
           hmac.update(challenge);
 
-          return (new Buffer(login.user() + &#x22; &#x22; + hmac.digest(&#x27;hex&#x27;)).toString(&#x22;base64&#x22;));
+          return (new Buffer(login.user() + " " + hmac.digest('hex')).toString("base64"));
         },
 
         encode_plain = function() {
-          return (new Buffer(&#x22;\u0000&#x22; + login.user() + &#x22;\u0000&#x22; + login.password())).toString(&#x22;base64&#x22;);
+          return (new Buffer("\u0000" + login.user() + "\u0000" + login.password())).toString("base64");
         },
 
         encode_xoauth2 = function() {
-          // console.log(&#x22;user=&#x22; + login.user() + &#x22;\1auth=Bearer &#x22; + login.password()+&#x22;\1\1&#x22;);
+          // console.log("user=" + login.user() + "\1auth=Bearer " + login.password()+"\1\1");
           // see: https://developers.google.com/gmail/xoauth2_protocol
-          return (new Buffer(&#x22;user=&#x22; + login.user() + &#x22;\u0001auth=Bearer &#x22; + login.password() + &#x22;\u0001\u0001&#x22;)).toString(&#x22;base64
-&#x22;);
+          return (new Buffer("user=" + login.user() + "\u0001auth=Bearer " + login.password() + "\u0001\u0001")).toString("base64
+");
         };
 
       // List of authentication methods we support: from preferred to
@@ -4621,8 +4614,8 @@ error = function(err)
       if (!method) {
         var preferred = self.authentication;
 
-        for (var i = 0; i &#x3c; preferred.length; i++) {
-          if ((self.features.auth || &#x22;&#x22;).indexOf(preferred[i]) != -1) {
+        for (var i = 0; i &lt; preferred.length; i++) {
+          if ((self.features.auth || "").indexOf(preferred[i]) != -1) {
             method = preferred[i];
             break;
           }
@@ -4632,8 +4625,8 @@ error = function(err)
       // handle bad responses from command differently
       var failed = function(err, data) {
         self.loggedin = false;
-        self.close(); // if auth is bad, close the connection, it won&#x27;t get better by itself
-        caller(callback, SMTPError(&#x27;authorization.failed&#x27;, SMTPError.AUTHFAILED, err, data));
+        self.close(); // if auth is bad, close the connection, it won't get better by itself
+        caller(callback, SMTPError('authorization.failed', SMTPError.AUTHFAILED, err, data));
       };
 
       var response = function(err, data) {
@@ -4652,7 +4645,7 @@ error = function(err)
           if (method == AUTH_METHODS.CRAM_MD5) {
             self.command(encode_cram_md5(msg), response, [235, 503]);
           } else if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.password())).toString(&#x22;base64&#x22;), response, [235, 503]);
+            self.command((new Buffer(login.password())).toString("base64"), response, [235, 503]);
           }
         }
       };
@@ -4662,22 +4655,22 @@ error = function(err)
           failed(err, data);
         } else {
           if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.user())).toString(&#x22;base64&#x22;), attempt, [334]);
+            self.command((new Buffer(login.user())).toString("base64"), attempt, [334]);
           }
         }
       };
 
-      if (method == AUTH_METHODS.CRAM_MD5) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.CRAM_MD5, attempt, [334]);
+      if (method == AUTH_METHODS.CRAM_MD5) self.command("AUTH " + AUTH_METHODS.CRAM_MD5, attempt, [334]);
 
-      else if (method == AUTH_METHODS.LOGIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.LOGIN, attempt_user, [334]);
+      else if (method == AUTH_METHODS.LOGIN) self.command("AUTH " + AUTH_METHODS.LOGIN, attempt_user, [334]);
 
-      else if (method == AUTH_METHODS.PLAIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.PLAIN + &#x22; &#x22; + encode_plain(login.user(), login.
+      else if (method == AUTH_METHODS.PLAIN) self.command("AUTH " + AUTH_METHODS.PLAIN + " " + encode_plain(login.user(), login.
 password()), response, [235, 503]);
 
-      else if (method == AUTH_METHODS.XOAUTH2) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.XOAUTH2 + &#x22; &#x22; + encode_xoauth2(login.user(),
+      else if (method == AUTH_METHODS.XOAUTH2) self.command("AUTH " + AUTH_METHODS.XOAUTH2 + " " + encode_xoauth2(login.user(),
 login.password()), response, [235, 503]);
 
-      else if (!method) caller(callback, SMTPError(&#x27;no form of authorization supported&#x27;, SMTPError.AUTHNOTSU ...</pre></li>
+      else if (!method) caller(callback, SMTPError('no form of authorization supported', SMTPError.AUTHNOTSU ...</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
 
@@ -4691,7 +4684,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">mail = function (callback, from) {
-  this.command(&#x22;mail FROM:&#x22; + from, callback);
+  this.command("mail FROM:" + from, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4722,7 +4715,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">noop = function (callback) {
-  this.send(&#x22;noop&#x22;, callback);
+  this.send("noop", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4740,18 +4733,18 @@ login.password()), response, [235, 503]);
   return _addListener(this, type, listener, false);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    stream.removeListener(&#x27;close&#x27;, close);
-    stream.removeListener(&#x27;error&#x27;, error);
+    stream.removeListener('close', close);
+    stream.removeListener('error', error);
 
-    if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
+    if(err &amp;&amp; typeof(onerror) == "function")
       onerror(err);
   };
 
-  //stream.<span class="apidocCodeKeywordSpan">on</span>(&#x27;readable&#x27;, watch);
-  stream.on(&#x27;data&#x27;, watch);
-  stream.on(&#x27;end&#x27;, end);
-  stream.on(&#x27;close&#x27;, close);
-  stream.on(&#x27;error&#x27;, error);
+  //stream.<span class="apidocCodeKeywordSpan">on</span>('readable', watch);
+  stream.on('data', watch);
+  stream.on('end', end);
+  stream.on('close', close);
+  stream.on('error', error);
   stream.setTimeout(timeout, timedout);
 };
 ...</pre></li>
@@ -4767,8 +4760,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function once(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.on(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -4788,10 +4781,10 @@ login.password()), response, [235, 503]);
   var self = this;
 
   //  According to RFC1869 some (badly written)
-  //  MTA&#x27;s will disconnect on an ehlo. Toss an exception if
+  //  MTA's will disconnect on an ehlo. Toss an exception if
   //  that happens -ddm
 
-  data.split(&#x22;\n&#x22;).forEach(function(ext) {
+  data.split("\n").forEach(function(ext) {
     var parse = ext.match(/^(?:\d+[\-=]?)\s*?([^\s]+)(?:\s+(.*)\s*?)?$/);
 
     // To be able to communicate with as many SMTP servers as possible,
@@ -4803,9 +4796,9 @@ login.password()), response, [235, 503]);
 
     if (parse) {
       // RFC 1869 requires a space between ehlo keyword and parameters.
-      // It&#x27;s actually stricter, in that only spaces are allowed between
+      // It's actually stricter, in that only spaces are allowed between
       // parameters, but were not going to check for that here.  Note
-      // that the space isn&#x27;t present if there are no parameters.
+      // that the space isn't present if there are no parameters.
       self.features[parse[1].toLowerCase()] = parse[2] || true;
     }
   });
@@ -4840,8 +4833,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function prependOnceListener(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.prependListener(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -4864,7 +4857,7 @@ login.password()), response, [235, 503]);
       self.close();
     };
 
-  this.command(&#x22;quit&#x22;, response, [221, 250]);
+  this.command("quit", response, [221, 250]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4879,7 +4872,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">rcpt = function (callback, to) {
-  this.command(&#x22;RCPT TO:&#x22; + to, callback, [250, 251]);
+  this.command("RCPT TO:" + to, callback, [250, 251]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4917,12 +4910,12 @@ login.password()), response, [235, 503]);
   // emit removeListener for all listeners on all events
   if (arguments.length === 0) {
     var keys = Object.keys(events);
-    for (var i = 0, key; i &#x3c; keys.length; ++i) {
+    for (var i = 0, key; i &lt; keys.length; ++i) {
       key = keys[i];
-      if (key === &#x27;removeListener&#x27;) continue;
+      if (key === 'removeListener') continue;
       this.removeAllListeners(key);
     }
-    this.removeAllListeners(&#x27;removeListener&#x27;);
+    this.removeAllListeners('removeListener');
     this._events = new EventHandlers();
     this._eventsCount = 0;
     return this;
@@ -4930,7 +4923,7 @@ login.password()), response, [235, 503]);
 
   listeners = events[type];
 
-  if (typeof listeners === &#x27;function&#x27;) {
+  if (typeof listeners === 'function') {
     this.removeListener(type, listeners);
   } else if (listeners) {
     // LIFO order
@@ -4945,18 +4938,18 @@ login.password()), response, [235, 503]);
 
   end = function(err)
   {
-stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection has ended&#x27;, SMTPError.CONNECTIONENDED, err));
+stream.emit('response', SMTPError('connection has ended', SMTPError.CONNECTIONENDED, err));
   };
 
   this.stop = function(err) {
-stream.<span class="apidocCodeKeywordSpan">removeAllListeners</span>(&#x27;response&#x27;);
-//stream.removeListener(&#x27;readable&#x27;, watch);
-stream.removeListener(&#x27;data&#x27;, watch);
-stream.removeListener(&#x27;end&#x27;, end);
-stream.removeListener(&#x27;close&#x27;, close);
-stream.removeListener(&#x27;error&#x27;, error);
+stream.<span class="apidocCodeKeywordSpan">removeAllListeners</span>('response');
+//stream.removeListener('readable', watch);
+stream.removeListener('data', watch);
+stream.removeListener('end', end);
+stream.removeListener('close', close);
+stream.removeListener('error', error);
 
-if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
+if(err &amp;&amp; typeof(onerror) == "function")
 ...</pre></li>
     </ul>
 
@@ -4972,8 +4965,8 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>description and source-code<pre class="apidocCodePre">function removeListener(type, listener) {
   var list, events, position, i, originalListener;
 
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
 
   events = this._events;
   if (!events)
@@ -4989,12 +4982,12 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     else {
       delete events[type];
       if (events.removeListener)
-        this.emit(&#x27;removeListener&#x27;, type, list.listener || listener);
+        this.emit('removeListener', type, list.listener || listener);
     }
-  } else if (typeof list !== &#x27;function&#x27;) {
+  } else if (typeof list !== 'function') {
     position = -1;
 
-    for (i = list.length; i-- &#x3e; 0;) {
+    for (i = list.length; i-- &gt; 0;) {
       if (list[i] === listener || list[i].listener === listener) {
         originalListener = list[i].listener;
         position = i;
@@ -5002,7 +4995,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
       }
     }
 
-    if (position &#x3c; 0)
+    if (position &lt; 0)
       return this;
 
     if (list.length === 1) {
@@ -5018,7 +5011,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     }
 
     if (events.removeListener)
-      this.emit(&#x27;removeListener&#x27;, type, originalListener || listener);
+      this.emit('removeListener', type, originalListener || listener);
   }
 
   return this;
@@ -5026,18 +5019,18 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>example usage<pre class="apidocCodePre">...
   end = function(err)
   {
-stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection has ended&#x27;, SMTPError.CONNECTIONENDED, err));
+stream.emit('response', SMTPError('connection has ended', SMTPError.CONNECTIONENDED, err));
   };
 
   this.stop = function(err) {
-stream.removeAllListeners(&#x27;response&#x27;);
-//stream.<span class="apidocCodeKeywordSpan">removeListener</span>(&#x27;readable&#x27;, watch);
-stream.removeListener(&#x27;data&#x27;, watch);
-stream.removeListener(&#x27;end&#x27;, end);
-stream.removeListener(&#x27;close&#x27;, close);
-stream.removeListener(&#x27;error&#x27;, error);
+stream.removeAllListeners('response');
+//stream.<span class="apidocCodeKeywordSpan">removeListener</span>('readable', watch);
+stream.removeListener('data', watch);
+stream.removeListener('end', end);
+stream.removeListener('close', close);
+stream.removeListener('error', error);
 
-if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
+if(err &amp;&amp; typeof(onerror) == "function")
   onerror(err);
 ...</pre></li>
     </ul>
@@ -5052,7 +5045,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">rset = function (callback) {
-  this.command(&#x22;rset&#x22;, callback);
+  this.command("rset", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5069,7 +5062,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>description and source-code<pre class="apidocCodePre">send = function (str, callback) {
   var self = this;
 
-  if (self.sock &#x26;&#x26; self._state == SMTPState.CONNECTED) {
+  if (self.sock &amp;&amp; self._state == SMTPState.CONNECTED) {
     log(str);
 
     var response = function(err, msg) {
@@ -5081,27 +5074,27 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
       }
     };
 
-    self.sock.once(&#x27;response&#x27;, response);
+    self.sock.once('response', response);
     self.sock.write(str);
   } else {
     self.close(true);
-    caller(callback, SMTPError(&#x27;no connection has been established&#x27;, SMTPError.NOCONNECTION));
+    caller(callback, SMTPError('no connection has been established', SMTPError.NOCONNECTION));
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
 // send the message and get a callback with an error or details of the message that was sent
 server.<span class="apidocCodeKeywordSpan">send</span>({
-   text:    &#x22;i hope this works&#x22;,
-   from:    &#x22;you &#x3c;username@your-email.com&#x3e;&#x22;,
-   to:      &#x22;someone &#x3c;someone@your-email.com&#x3e;, another &#x3c;another@your-email.com&#x3e;&#x22;,
-   cc:      &#x22;else &#x3c;else@your-email.com&#x3e;&#x22;,
-   subject: &#x22;testing emailjs&#x22;
+   text:    "i hope this works",
+   from:    "you &lt;username@your-email.com&gt;",
+   to:      "someone &lt;someone@your-email.com&gt;, another &lt;another@your-email.com&gt;",
+   cc:      "else &lt;else@your-email.com&gt;",
+   subject: "testing emailjs"
 }, function(err, message) { console.log(err || message); });
 ```
 ...</pre></li>
@@ -5117,8 +5110,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function setMaxListeners(n) {
-  if (typeof n !== &#x27;number&#x27; || n &#x3c; 0 || isNaN(n))
-    throw new TypeError(&#x27;&#x22;n&#x22; argument must be a positive number&#x27;);
+  if (typeof n !== 'number' || n &lt; 0 || isNaN(n))
+    throw new TypeError('"n" argument must be a positive number');
   this._maxListeners = n;
   return this;
 }</pre></li>
@@ -5139,7 +5132,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 
     response = function(err, msg) {
       if (err) {
-        err.message += &#x22; while establishing a starttls session&#x22;;
+        err.message += " while establishing a starttls session";
         caller(callback, err);
       } else {
         // support new API
@@ -5149,7 +5142,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
             isServer: false // older versions of node (0.12), do not default to false properly...
           });
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -5179,7 +5172,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
           };
 
           //secured_socket = starttls.secure(self.sock, self.tls, secured);
-          var starttls = require(&#x27;starttls&#x27;);
+          var starttls = require('starttls');
           secured_socket = starttls({
             socket: self.sock,
             host: self.host,
@@ -5189,7 +5182,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
               false)
           }, secured).cleartext;
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -5197,7 +5190,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       }
     };
 
-  this.command(&#x22;starttls&#x22;, response, [220]);
+  this.command("starttls", response, [220]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5227,8 +5220,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">verify = function (address, callback) {
-  // SMTP &#x27;verify&#x27; command -- checks for address validity.&#x22;&#x22;&#x22;
-  this.command(&#x22;vrfy &#x22; + address, callback, [250, 251, 252]);
+  // SMTP 'verify' command -- checks for address validity."""
+  this.command("vrfy " + address, callback, [250, 251, 252]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5292,10 +5285,10 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     <li>description and source-code<pre class="apidocCodePre">close = function (force) {
   if (this.sock) {
     if (force) {
-      log(&#x22;smtp connection destroyed!&#x22;);
+      log("smtp connection destroyed!");
       this.sock.destroy();
     } else {
-      log(&#x22;smtp connection closed.&#x22;);
+      log("smtp connection closed.");
       this.sock.end();
     }
   }
@@ -5309,7 +5302,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
   this._secure = false;
   this.sock = null;
   this.features = null;
-  this.loggedin = !(this.user() &#x26;&#x26; this.password());
+  this.loggedin = !(this.user() &amp;&amp; this.password());
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5329,7 +5322,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">command = function (cmd, callback, codes, failed) {
-  codes = Array.isArray(codes) ? codes : typeof(codes) == &#x27;number&#x27; ? [codes] : [250];
+  codes = Array.isArray(codes) ? codes : typeof(codes) == 'number' ? [codes] : [250];
 
   var response = function(err, msg) {
     if (err) {
@@ -5338,9 +5331,9 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       if (codes.indexOf(Number(msg.code)) != -1) {
         caller(callback, err, msg.data, msg.message);
       } else {
-        var errorMessage = &#x22;bad response on command &#x27;&#x22; + cmd.split(&#x27; &#x27;)[0] + &#x22;&#x27;&#x22;;
+        var errorMessage = "bad response on command '" + cmd.split(' ')[0] + "'";
         if (msg.message) {
-          errorMessage += &#x27;: &#x27; + msg.message;
+          errorMessage += ': ' + msg.message;
         }
         caller(callback, SMTPError(errorMessage, SMTPError.BADRESPONSE, null, msg.data));
       }
@@ -5384,44 +5377,44 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 
   var connected = function(err) {
     if (!err) {
-      log(&#x22;connected: &#x22; + self.host + &#x22;:&#x22; + self.port);
+      log("connected: " + self.host + ":" + self.port);
 
-      if (self.ssl &#x26;&#x26; !self.tls) {
+      if (self.ssl &amp;&amp; !self.tls) {
         // if key/ca/cert was passed in, check if connection is authorized
-        if (typeof(self.ssl) != &#x27;boolean&#x27; &#x26;&#x26; !self.sock.authorized) {
+        if (typeof(self.ssl) != 'boolean' &amp;&amp; !self.sock.authorized) {
           self.close(true);
-          caller(callback, SMTPError(&#x27;could not establish an ssl connection&#x27;, SMTPError.CONNECTIONAUTH, err));
+          caller(callback, SMTPError('could not establish an ssl connection', SMTPError.CONNECTIONAUTH, err));
         } else self._secure = true;
       }
     } else {
       self.close(true);
-      caller(callback, SMTPError(&#x22;could not connect&#x22;, SMTPError.COULDNOTCONNECT, err));
+      caller(callback, SMTPError("could not connect", SMTPError.COULDNOTCONNECT, err));
     }
   };
 
   var response = function(err, msg) {
     if (err) {
-      if (self._state === SMTPState.NOTCONNECTED &#x26;&#x26; !self.sock) {
+      if (self._state === SMTPState.NOTCONNECTED &amp;&amp; !self.sock) {
         return;
       }
       self.close(true);
       caller(callback, err);
-    } else if (msg.code == &#x27;220&#x27;) {
+    } else if (msg.code == '220') {
       log(msg.data);
 
       // might happen first, so no need to wait on connected()
       self._state = SMTPState.CONNECTED;
       caller(callback, null, msg.data);
     } else {
-      log(&#x22;response (data): &#x22; + msg.data);
+      log("response (data): " + msg.data);
       self.quit(function() {
-        caller(callback, SMTPError(&#x22;bad response on connection&#x22;, SMTPError.BADRESPONSE, err, msg.data));
+        caller(callback, SMTPError("bad response on connection", SMTPError.BADRESPONSE, err, msg.data));
       });
     }
   };
 
   self._state = SMTPState.CONNECTING;
-  log(&#x22;connecting: &#x22; + self.host + &#x22;:&#x22; + self.port);
+  log("connecting: " + self.host + ":" + self.port);
 
   if (self.ssl) {
     self.sock = tls.connect(self.port, self.host, self.ssl, connected);
@@ -5433,8 +5426,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
   self.monitor = SMTPResponse.monitor(self.sock, self.timeout, function() {
     self.close(true);
   });
-  self.sock.once(&#x27;response&#x27;, response);
-  self.sock.once(&#x27;error&#x27;, response); // the socket could reset or throw, so let&#x27;s handle it and let the user know
+  self.sock.once('response', response);
+  self.sock.once('error', response); // the socket could reset or throw, so let's handle it and let the user know
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
  - auth access to an SMTP Server
@@ -5443,11 +5436,11 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 ## EXAMPLE USAGE - text only emails
 
 ```javascript
-var email 	= require(&#x22;./path/to/emailjs/email&#x22;);
+var email 	= require("./path/to/emailjs/email");
 var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
@@ -5470,7 +5463,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">data = function (callback) {
-  this.command(&#x22;data&#x22;, callback, [354]);
+  this.command("data", callback, [354]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5490,7 +5483,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">data_end = function (callback) {
-  this.command(CRLF + &#x22;.&#x22;, callback);
+  this.command(CRLF + ".", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5538,7 +5531,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
       } else {
         self.parse_smtp_features(data);
 
-        if (self.tls &#x26;&#x26; !self._secure) {
+        if (self.tls &amp;&amp; !self._secure) {
           self.starttls(function() {
             self.ehlo(callback, domain);
           });
@@ -5549,7 +5542,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     };
 
   this.features = {};
-  this.command(&#x22;ehlo &#x22; + (domain || this.domain), response);
+  this.command("ehlo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5607,31 +5600,31 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     <li>description and source-code<pre class="apidocCodePre">function emit(type) {
   var er, handler, len, args, i, events, domain;
   var needDomainExit = false;
-  var doError = (type === &#x27;error&#x27;);
+  var doError = (type === 'error');
 
   events = this._events;
   if (events)
-    doError = (doError &#x26;&#x26; events.error == null);
+    doError = (doError &amp;&amp; events.error == null);
   else if (!doError)
     return false;
 
   domain = this.domain;
 
-  // If there is no &#x27;error&#x27; event listener then throw.
+  // If there is no 'error' event listener then throw.
   if (doError) {
     er = arguments[1];
     if (domain) {
       if (!er)
-        er = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event&#x27;);
+        er = new Error('Uncaught, unspecified "error" event');
       er.domainEmitter = this;
       er.domain = domain;
       er.domainThrown = false;
-      domain.emit(&#x27;error&#x27;, er);
+      domain.emit('error', er);
     } else if (er instanceof Error) {
-      throw er; // Unhandled &#x27;error&#x27; event
+      throw er; // Unhandled 'error' event
     } else {
       // At least give some kind of context to the user
-      var err = new Error(&#x27;Uncaught, unspecified &#x22;error&#x22; event. (&#x27; + er + &#x27;)&#x27;);
+      var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
       err.context = er;
       throw err;
     }
@@ -5643,12 +5636,12 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
   if (!handler)
     return false;
 
-  if (domain &#x26;&#x26; this !== process) {
+  if (domain &amp;&amp; this !== process) {
     domain.enter();
     needDomainExit = true;
   }
 
-  var isFn = typeof handler === &#x27;function&#x27;;
+  var isFn = typeof handler === 'function';
   len = arguments.length;
   switch (len) {
     // fast cases
@@ -5667,7 +5660,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     // slower
     default:
       args = new Array(len - 1);
-      for (i = 1; i &#x3c; len; i++)
+      for (i = 1; i &lt; len; i++)
         args[i - 1] = arguments[i];
       emitMany(handler, isFn, this, args);
   }
@@ -5678,22 +5671,22 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
   return true;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    var line = buffer.replace(&#x22;\r&#x22;, &#x27;&#x27;);
+    var line = buffer.replace("\r", '');
 
     if(!line.trim().split(/\n/).pop().match(/^(\d{3})\s/))
         return;
 
     var match = line ? line.match(/(\d+)\s?(.*)/) : null;
 
-    stream.<span class="apidocCodeKeywordSpan">emit</span>(&#x27;response&#x27;, null, match ? {code:match[1], message:match[2],
+    stream.<span class="apidocCodeKeywordSpan">emit</span>('response', null, match ? {code:match[1], message:match[2],
 data:line} : {code:-1, data:line});
-    buffer = &#x27;&#x27;;
+    buffer = '';
   }
 },
 
 error = function(err)
 {
-  stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection encountered an error&#x27;, SMTPError.ERROR, err));
+  stream.emit('response', SMTPError('connection encountered an error', SMTPError.ERROR, err));
 ...</pre></li>
     </ul>
 
@@ -5712,7 +5705,7 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function eventNames() {
-  return this._eventsCount &#x3e; 0 ? Reflect.ownKeys(this._events) : [];
+  return this._eventsCount &gt; 0 ? Reflect.ownKeys(this._events) : [];
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5732,8 +5725,8 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">expn = function (address, callback) {
-  // SMTP &#x27;expn&#x27; command -- expands a mailing list.
-  this.command(&#x22;expn &#x22; + address, callback);
+  // SMTP 'expn' command -- expands a mailing list.
+  this.command("expn " + address, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5794,7 +5787,7 @@ error = function(err)
     <ul>
     <li>description and source-code<pre class="apidocCodePre">helo = function (callback, domain) {
 <span class="apidocCodeCommentSpan">  /*
-   * SMTP &#x27;helo&#x27; command.
+   * SMTP 'helo' command.
    * Hostname to send for self command defaults to the FQDN of the local
    * host.
    */
@@ -5810,7 +5803,7 @@ error = function(err)
       }
     };
 
-  this.command(&#x22;helo &#x22; + (domain || this.domain), response);
+  this.command("helo " + (domain || this.domain), response);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5830,8 +5823,8 @@ error = function(err)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">help = function (callback, args) {
-  // SMTP &#x27;help&#x27; command, returns text from the server
-  this.command(args ? &#x22;help &#x22; + args : &#x22;help&#x22;, callback, [211, 214]);
+  // SMTP 'help' command, returns text from the server
+  this.command(args ? "help " + args : "help", callback, [211, 214]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5856,7 +5849,7 @@ error = function(err)
   if (events) {
     const evlistener = events[type];
 
-    if (typeof evlistener === &#x27;function&#x27;) {
+    if (typeof evlistener === 'function') {
       return 1;
     } else if (evlistener) {
       return evlistener.length;
@@ -5893,7 +5886,7 @@ error = function(err)
     evlistener = events[type];
     if (!evlistener)
       ret = [];
-    else if (typeof evlistener === &#x27;function&#x27;)
+    else if (typeof evlistener === 'function')
       ret = [evlistener];
     else
       ret = arrayClone(evlistener, evlistener.length);
@@ -5928,10 +5921,10 @@ error = function(err)
       password: password ? function() {
         return password;
       } : self.password,
-      method: options &#x26;&#x26; options.method ? options.method.toUpperCase() : &#x27;&#x27;
+      method: options &amp;&amp; options.method ? options.method.toUpperCase() : ''
     },
 
-    domain = options &#x26;&#x26; options.domain ? options.domain : this.domain,
+    domain = options &amp;&amp; options.domain ? options.domain : this.domain,
 
     initiate = function(err, data) {
       if (err) {
@@ -5955,23 +5948,23 @@ error = function(err)
       var method = null,
 
         encode_cram_md5 = function(challenge) {
-          challenge = (new Buffer(challenge, &#x22;base64&#x22;)).toString(&#x22;ascii&#x22;);
+          challenge = (new Buffer(challenge, "base64")).toString("ascii");
 
-          var hmac = crypto.createHmac(&#x27;md5&#x27;, login.password());
+          var hmac = crypto.createHmac('md5', login.password());
           hmac.update(challenge);
 
-          return (new Buffer(login.user() + &#x22; &#x22; + hmac.digest(&#x27;hex&#x27;)).toString(&#x22;base64&#x22;));
+          return (new Buffer(login.user() + " " + hmac.digest('hex')).toString("base64"));
         },
 
         encode_plain = function() {
-          return (new Buffer(&#x22;\u0000&#x22; + login.user() + &#x22;\u0000&#x22; + login.password())).toString(&#x22;base64&#x22;);
+          return (new Buffer("\u0000" + login.user() + "\u0000" + login.password())).toString("base64");
         },
 
         encode_xoauth2 = function() {
-          // console.log(&#x22;user=&#x22; + login.user() + &#x22;\1auth=Bearer &#x22; + login.password()+&#x22;\1\1&#x22;);
+          // console.log("user=" + login.user() + "\1auth=Bearer " + login.password()+"\1\1");
           // see: https://developers.google.com/gmail/xoauth2_protocol
-          return (new Buffer(&#x22;user=&#x22; + login.user() + &#x22;\u0001auth=Bearer &#x22; + login.password() + &#x22;\u0001\u0001&#x22;)).toString(&#x22;base64
-&#x22;);
+          return (new Buffer("user=" + login.user() + "\u0001auth=Bearer " + login.password() + "\u0001\u0001")).toString("base64
+");
         };
 
       // List of authentication methods we support: from preferred to
@@ -5979,8 +5972,8 @@ error = function(err)
       if (!method) {
         var preferred = self.authentication;
 
-        for (var i = 0; i &#x3c; preferred.length; i++) {
-          if ((self.features.auth || &#x22;&#x22;).indexOf(preferred[i]) != -1) {
+        for (var i = 0; i &lt; preferred.length; i++) {
+          if ((self.features.auth || "").indexOf(preferred[i]) != -1) {
             method = preferred[i];
             break;
           }
@@ -5990,8 +5983,8 @@ error = function(err)
       // handle bad responses from command differently
       var failed = function(err, data) {
         self.loggedin = false;
-        self.close(); // if auth is bad, close the connection, it won&#x27;t get better by itself
-        caller(callback, SMTPError(&#x27;authorization.failed&#x27;, SMTPError.AUTHFAILED, err, data));
+        self.close(); // if auth is bad, close the connection, it won't get better by itself
+        caller(callback, SMTPError('authorization.failed', SMTPError.AUTHFAILED, err, data));
       };
 
       var response = function(err, data) {
@@ -6010,7 +6003,7 @@ error = function(err)
           if (method == AUTH_METHODS.CRAM_MD5) {
             self.command(encode_cram_md5(msg), response, [235, 503]);
           } else if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.password())).toString(&#x22;base64&#x22;), response, [235, 503]);
+            self.command((new Buffer(login.password())).toString("base64"), response, [235, 503]);
           }
         }
       };
@@ -6020,22 +6013,22 @@ error = function(err)
           failed(err, data);
         } else {
           if (method == AUTH_METHODS.LOGIN) {
-            self.command((new Buffer(login.user())).toString(&#x22;base64&#x22;), attempt, [334]);
+            self.command((new Buffer(login.user())).toString("base64"), attempt, [334]);
           }
         }
       };
 
-      if (method == AUTH_METHODS.CRAM_MD5) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.CRAM_MD5, attempt, [334]);
+      if (method == AUTH_METHODS.CRAM_MD5) self.command("AUTH " + AUTH_METHODS.CRAM_MD5, attempt, [334]);
 
-      else if (method == AUTH_METHODS.LOGIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.LOGIN, attempt_user, [334]);
+      else if (method == AUTH_METHODS.LOGIN) self.command("AUTH " + AUTH_METHODS.LOGIN, attempt_user, [334]);
 
-      else if (method == AUTH_METHODS.PLAIN) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.PLAIN + &#x22; &#x22; + encode_plain(login.user(), login.
+      else if (method == AUTH_METHODS.PLAIN) self.command("AUTH " + AUTH_METHODS.PLAIN + " " + encode_plain(login.user(), login.
 password()), response, [235, 503]);
 
-      else if (method == AUTH_METHODS.XOAUTH2) self.command(&#x22;AUTH &#x22; + AUTH_METHODS.XOAUTH2 + &#x22; &#x22; + encode_xoauth2(login.user(),
+      else if (method == AUTH_METHODS.XOAUTH2) self.command("AUTH " + AUTH_METHODS.XOAUTH2 + " " + encode_xoauth2(login.user(),
 login.password()), response, [235, 503]);
 
-      else if (!method) caller(callback, SMTPError(&#x27;no form of authorization supported&#x27;, SMTPError.AUTHNOTSU ...</pre></li>
+      else if (!method) caller(callback, SMTPError('no form of authorization supported', SMTPError.AUTHNOTSU ...</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
 
@@ -6054,7 +6047,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">mail = function (callback, from) {
-  this.command(&#x22;mail FROM:&#x22; + from, callback);
+  this.command("mail FROM:" + from, callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6095,7 +6088,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">noop = function (callback) {
-  this.send(&#x22;noop&#x22;, callback);
+  this.send("noop", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6115,8 +6108,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function once(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.on(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -6141,10 +6134,10 @@ login.password()), response, [235, 503]);
   var self = this;
 
   //  According to RFC1869 some (badly written)
-  //  MTA&#x27;s will disconnect on an ehlo. Toss an exception if
+  //  MTA's will disconnect on an ehlo. Toss an exception if
   //  that happens -ddm
 
-  data.split(&#x22;\n&#x22;).forEach(function(ext) {
+  data.split("\n").forEach(function(ext) {
     var parse = ext.match(/^(?:\d+[\-=]?)\s*?([^\s]+)(?:\s+(.*)\s*?)?$/);
 
     // To be able to communicate with as many SMTP servers as possible,
@@ -6156,9 +6149,9 @@ login.password()), response, [235, 503]);
 
     if (parse) {
       // RFC 1869 requires a space between ehlo keyword and parameters.
-      // It&#x27;s actually stricter, in that only spaces are allowed between
+      // It's actually stricter, in that only spaces are allowed between
       // parameters, but were not going to check for that here.  Note
-      // that the space isn&#x27;t present if there are no parameters.
+      // that the space isn't present if there are no parameters.
       self.features[parse[1].toLowerCase()] = parse[2] || true;
     }
   });
@@ -6203,8 +6196,8 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function prependOnceListener(type, listener) {
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
   this.prependListener(type, _onceWrap(this, type, listener));
   return this;
 }</pre></li>
@@ -6232,7 +6225,7 @@ login.password()), response, [235, 503]);
       self.close();
     };
 
-  this.command(&#x22;quit&#x22;, response, [221, 250]);
+  this.command("quit", response, [221, 250]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6252,7 +6245,7 @@ login.password()), response, [235, 503]);
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">rcpt = function (callback, to) {
-  this.command(&#x22;RCPT TO:&#x22; + to, callback, [250, 251]);
+  this.command("RCPT TO:" + to, callback, [250, 251]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6295,12 +6288,12 @@ login.password()), response, [235, 503]);
   // emit removeListener for all listeners on all events
   if (arguments.length === 0) {
     var keys = Object.keys(events);
-    for (var i = 0, key; i &#x3c; keys.length; ++i) {
+    for (var i = 0, key; i &lt; keys.length; ++i) {
       key = keys[i];
-      if (key === &#x27;removeListener&#x27;) continue;
+      if (key === 'removeListener') continue;
       this.removeAllListeners(key);
     }
-    this.removeAllListeners(&#x27;removeListener&#x27;);
+    this.removeAllListeners('removeListener');
     this._events = new EventHandlers();
     this._eventsCount = 0;
     return this;
@@ -6308,7 +6301,7 @@ login.password()), response, [235, 503]);
 
   listeners = events[type];
 
-  if (typeof listeners === &#x27;function&#x27;) {
+  if (typeof listeners === 'function') {
     this.removeListener(type, listeners);
   } else if (listeners) {
     // LIFO order
@@ -6323,18 +6316,18 @@ login.password()), response, [235, 503]);
 
   end = function(err)
   {
-stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection has ended&#x27;, SMTPError.CONNECTIONENDED, err));
+stream.emit('response', SMTPError('connection has ended', SMTPError.CONNECTIONENDED, err));
   };
 
   this.stop = function(err) {
-stream.<span class="apidocCodeKeywordSpan">removeAllListeners</span>(&#x27;response&#x27;);
-//stream.removeListener(&#x27;readable&#x27;, watch);
-stream.removeListener(&#x27;data&#x27;, watch);
-stream.removeListener(&#x27;end&#x27;, end);
-stream.removeListener(&#x27;close&#x27;, close);
-stream.removeListener(&#x27;error&#x27;, error);
+stream.<span class="apidocCodeKeywordSpan">removeAllListeners</span>('response');
+//stream.removeListener('readable', watch);
+stream.removeListener('data', watch);
+stream.removeListener('end', end);
+stream.removeListener('close', close);
+stream.removeListener('error', error);
 
-if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
+if(err &amp;&amp; typeof(onerror) == "function")
 ...</pre></li>
     </ul>
 
@@ -6355,8 +6348,8 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>description and source-code<pre class="apidocCodePre">function removeListener(type, listener) {
   var list, events, position, i, originalListener;
 
-  if (typeof listener !== &#x27;function&#x27;)
-    throw new TypeError(&#x27;&#x22;listener&#x22; argument must be a function&#x27;);
+  if (typeof listener !== 'function')
+    throw new TypeError('"listener" argument must be a function');
 
   events = this._events;
   if (!events)
@@ -6372,12 +6365,12 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     else {
       delete events[type];
       if (events.removeListener)
-        this.emit(&#x27;removeListener&#x27;, type, list.listener || listener);
+        this.emit('removeListener', type, list.listener || listener);
     }
-  } else if (typeof list !== &#x27;function&#x27;) {
+  } else if (typeof list !== 'function') {
     position = -1;
 
-    for (i = list.length; i-- &#x3e; 0;) {
+    for (i = list.length; i-- &gt; 0;) {
       if (list[i] === listener || list[i].listener === listener) {
         originalListener = list[i].listener;
         position = i;
@@ -6385,7 +6378,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
       }
     }
 
-    if (position &#x3c; 0)
+    if (position &lt; 0)
       return this;
 
     if (list.length === 1) {
@@ -6401,7 +6394,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     }
 
     if (events.removeListener)
-      this.emit(&#x27;removeListener&#x27;, type, originalListener || listener);
+      this.emit('removeListener', type, originalListener || listener);
   }
 
   return this;
@@ -6409,18 +6402,18 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>example usage<pre class="apidocCodePre">...
   end = function(err)
   {
-stream.emit(&#x27;response&#x27;, SMTPError(&#x27;connection has ended&#x27;, SMTPError.CONNECTIONENDED, err));
+stream.emit('response', SMTPError('connection has ended', SMTPError.CONNECTIONENDED, err));
   };
 
   this.stop = function(err) {
-stream.removeAllListeners(&#x27;response&#x27;);
-//stream.<span class="apidocCodeKeywordSpan">removeListener</span>(&#x27;readable&#x27;, watch);
-stream.removeListener(&#x27;data&#x27;, watch);
-stream.removeListener(&#x27;end&#x27;, end);
-stream.removeListener(&#x27;close&#x27;, close);
-stream.removeListener(&#x27;error&#x27;, error);
+stream.removeAllListeners('response');
+//stream.<span class="apidocCodeKeywordSpan">removeListener</span>('readable', watch);
+stream.removeListener('data', watch);
+stream.removeListener('end', end);
+stream.removeListener('close', close);
+stream.removeListener('error', error);
 
-if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
+if(err &amp;&amp; typeof(onerror) == "function")
   onerror(err);
 ...</pre></li>
     </ul>
@@ -6440,7 +6433,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">rset = function (callback) {
-  this.command(&#x22;rset&#x22;, callback);
+  this.command("rset", callback);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6462,7 +6455,7 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
     <li>description and source-code<pre class="apidocCodePre">send = function (str, callback) {
   var self = this;
 
-  if (self.sock &#x26;&#x26; self._state == SMTPState.CONNECTED) {
+  if (self.sock &amp;&amp; self._state == SMTPState.CONNECTED) {
     log(str);
 
     var response = function(err, msg) {
@@ -6474,27 +6467,27 @@ if(err &#x26;&#x26; typeof(onerror) == &#x22;function&#x22;)
       }
     };
 
-    self.sock.once(&#x27;response&#x27;, response);
+    self.sock.once('response', response);
     self.sock.write(str);
   } else {
     self.close(true);
-    caller(callback, SMTPError(&#x27;no connection has been established&#x27;, SMTPError.NOCONNECTION));
+    caller(callback, SMTPError('no connection has been established', SMTPError.NOCONNECTION));
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
 // send the message and get a callback with an error or details of the message that was sent
 server.<span class="apidocCodeKeywordSpan">send</span>({
-   text:    &#x22;i hope this works&#x22;,
-   from:    &#x22;you &#x3c;username@your-email.com&#x3e;&#x22;,
-   to:      &#x22;someone &#x3c;someone@your-email.com&#x3e;, another &#x3c;another@your-email.com&#x3e;&#x22;,
-   cc:      &#x22;else &#x3c;else@your-email.com&#x3e;&#x22;,
-   subject: &#x22;testing emailjs&#x22;
+   text:    "i hope this works",
+   from:    "you &lt;username@your-email.com&gt;",
+   to:      "someone &lt;someone@your-email.com&gt;, another &lt;another@your-email.com&gt;",
+   cc:      "else &lt;else@your-email.com&gt;",
+   subject: "testing emailjs"
 }, function(err, message) { console.log(err || message); });
 ```
 ...</pre></li>
@@ -6515,8 +6508,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function setMaxListeners(n) {
-  if (typeof n !== &#x27;number&#x27; || n &#x3c; 0 || isNaN(n))
-    throw new TypeError(&#x27;&#x22;n&#x22; argument must be a positive number&#x27;);
+  if (typeof n !== 'number' || n &lt; 0 || isNaN(n))
+    throw new TypeError('"n" argument must be a positive number');
   this._maxListeners = n;
   return this;
 }</pre></li>
@@ -6542,7 +6535,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 
     response = function(err, msg) {
       if (err) {
-        err.message += &#x22; while establishing a starttls session&#x22;;
+        err.message += " while establishing a starttls session";
         caller(callback, err);
       } else {
         // support new API
@@ -6552,7 +6545,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
             isServer: false // older versions of node (0.12), do not default to false properly...
           });
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -6582,7 +6575,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
           };
 
           //secured_socket = starttls.secure(self.sock, self.tls, secured);
-          var starttls = require(&#x27;starttls&#x27;);
+          var starttls = require('starttls');
           secured_socket = starttls({
             socket: self.sock,
             host: self.host,
@@ -6592,7 +6585,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
               false)
           }, secured).cleartext;
 
-          secured_socket.on(&#x27;error&#x27;, function(err) {
+          secured_socket.on('error', function(err) {
             self.close(true);
             caller(callback, err);
           });
@@ -6600,7 +6593,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       }
     };
 
-  this.command(&#x22;starttls&#x22;, response, [220]);
+  this.command("starttls", response, [220]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6640,8 +6633,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">verify = function (address, callback) {
-  // SMTP &#x27;verify&#x27; command -- checks for address validity.&#x22;&#x22;&#x22;
-  this.command(&#x22;vrfy &#x22; + address, callback, [250, 251, 252]);
+  // SMTP 'verify' command -- checks for address validity."""
+  this.command("vrfy " + address, callback, [250, 251, 252]);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -6713,10 +6706,10 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    this.alternative  = null;
    var now = new Date();
    this.header       = {
-      &#x22;message-id&#x22;:&#x22;&#x3c;&#x22; + now.getTime() + &#x22;.&#x22; + (counter++) + &#x22;.&#x22; + process.pid + &#x22;@&#x22; + os.hostname() +&#x22;&#x3e;&#x22;,
-      &#x22;date&#x22;:moment().locale(&#x27;en&#x27;).format(&#x22;ddd, DD MMM YYYY HH:mm:ss ZZ&#x22;)
+      "message-id":"&lt;" + now.getTime() + "." + (counter++) + "." + process.pid + "@" + os.hostname() +"&gt;",
+      "date":moment().locale('en').format("ddd, DD MMM YYYY HH:mm:ss ZZ")
    };
-   this.content      = &#x22;text/plain; charset=utf-8&#x22;;
+   this.content      = "text/plain; charset=utf-8";
 
    for(var header in headers)
    {
@@ -6725,25 +6718,25 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       {
          this.content = headers[header];
       }
-      else if(header == &#x27;text&#x27;)
+      else if(header == 'text')
       {
          this.text = headers[header];
       }
-      else if(header == &#x22;attachment&#x22; &#x26;&#x26; typeof (headers[header]) == &#x22;object&#x22;)
+      else if(header == "attachment" &amp;&amp; typeof (headers[header]) == "object")
       {
          if(Array.isArray(headers[header])) {
             var that = this;
 
-            for (var i = 0, l = headers[header].length; i &#x3c; l; i++) {
+            for (var i = 0, l = headers[header].length; i &lt; l; i++) {
               this.attach(headers[header][i]);
             }
          } else {
             this.attach(headers[header]);
          }
       }
-      else if(header == &#x27;subject&#x27;)
+      else if(header == 'subject')
       {
-         this.header.subject = mimelib.encodeMimeWord(headers.subject, &#x27;Q&#x27;, &#x27;utf-8&#x27;);
+         this.header.subject = mimelib.encodeMimeWord(headers.subject, 'Q', 'utf-8');
       }
       else if(/^(cc|bcc|to|from)/i.test(header))
       {
@@ -6798,10 +6791,10 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    this.alternative  = null;
    var now = new Date();
    this.header       = {
-      &#x22;message-id&#x22;:&#x22;&#x3c;&#x22; + now.getTime() + &#x22;.&#x22; + (counter++) + &#x22;.&#x22; + process.pid + &#x22;@&#x22; + os.hostname() +&#x22;&#x3e;&#x22;,
-      &#x22;date&#x22;:moment().locale(&#x27;en&#x27;).format(&#x22;ddd, DD MMM YYYY HH:mm:ss ZZ&#x22;)
+      "message-id":"&lt;" + now.getTime() + "." + (counter++) + "." + process.pid + "@" + os.hostname() +"&gt;",
+      "date":moment().locale('en').format("ddd, DD MMM YYYY HH:mm:ss ZZ")
    };
-   this.content      = &#x22;text/plain; charset=utf-8&#x22;;
+   this.content      = "text/plain; charset=utf-8";
 
    for(var header in headers)
    {
@@ -6810,25 +6803,25 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       {
          this.content = headers[header];
       }
-      else if(header == &#x27;text&#x27;)
+      else if(header == 'text')
       {
          this.text = headers[header];
       }
-      else if(header == &#x22;attachment&#x22; &#x26;&#x26; typeof (headers[header]) == &#x22;object&#x22;)
+      else if(header == "attachment" &amp;&amp; typeof (headers[header]) == "object")
       {
          if(Array.isArray(headers[header])) {
             var that = this;
 
-            for (var i = 0, l = headers[header].length; i &#x3c; l; i++) {
+            for (var i = 0, l = headers[header].length; i &lt; l; i++) {
               this.attach(headers[header][i]);
             }
          } else {
             this.attach(headers[header]);
          }
       }
-      else if(header == &#x27;subject&#x27;)
+      else if(header == 'subject')
       {
-         this.header.subject = mimelib.encodeMimeWord(headers.subject, &#x27;Q&#x27;, &#x27;utf-8&#x27;);
+         this.header.subject = mimelib.encodeMimeWord(headers.subject, 'Q', 'utf-8');
       }
       else if(/^(cc|bcc|to|from)/i.test(header))
       {
@@ -6863,17 +6856,17 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 {
 <span class="apidocCodeCommentSpan">   /*
       legacy support, will remove eventually...
-      arguments -&#x3e; (path, type, name, headers)
+      arguments -&gt; (path, type, name, headers)
    */
-</span>   if (arguments.length &#x3e; 1)
+</span>   if (arguments.length &gt; 1)
      options = {path:options, type:arguments[1], name:arguments[2]};
 
    // sender can specify an attachment as an alternative
    if(options.alternative)
    {
       this.alternative           = options;
-      this.alternative.charset   = options.charset || &#x22;utf-8&#x22;;
-      this.alternative.type      = options.type || &#x22;text/html&#x22;;
+      this.alternative.charset   = options.charset || "utf-8";
+      this.alternative.type      = options.type || "text/html";
       this.alternative.inline    = true;
    }
    else
@@ -6898,8 +6891,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    this.alternative =
    {
       data:    html,
-      charset: charset || &#x22;utf-8&#x22;,
-      type:    &#x22;text/html&#x22;,
+      charset: charset || "utf-8",
+      type:    "text/html",
       inline:  true
    };
 
@@ -6919,7 +6912,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     <ul>
     <li>description and source-code<pre class="apidocCodePre">read = function (callback)
 {
-   var buffer = &#x22;&#x22;;
+   var buffer = "";
 
    var capture = function(data)
    {
@@ -6933,14 +6926,14 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 
    var str = this.stream();
 
-   str.on(&#x27;data&#x27;, capture);
-   str.on(&#x27;end&#x27;, output);
-   str.on(&#x27;error&#x27;, output);
+   str.on('data', capture);
+   str.on('end', output);
+   str.on('error', output);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
   {
     stream.end();
-    stream.emit(&#x27;response&#x27;, SMTPError(&#x27;timedout while connecting to smtp server&#x27;, SMTPError.TIMEDOUT, err));
+    stream.emit('response', SMTPError('timedout while connecting to smtp server', SMTPError.TIMEDOUT, err));
   },
 
   watch = function(data)
@@ -6987,11 +6980,11 @@ notify();
 
    if(!self.header.from)
    {
-      callback(false, &#x22;message does not have a valid sender&#x22;);
+      callback(false, "message does not have a valid sender");
    }
    if(!(self.header.to || self.header.cc || self.header.bcc))
    {
-      callback(false, &#x22;message does not have a valid recipient&#x22;);
+      callback(false, "message does not have a valid recipient");
    }
    else if(self.attachments.length === 0)
    {
@@ -7006,22 +6999,22 @@ notify();
       {
          if(attachment.path)
          {
-            // migrating path-&#x3e;fs for existsSync)
+            // migrating path-&gt;fs for existsSync)
             if(!(fs.existsSync || path.existsSync)(attachment.path))
-               failed.push(attachment.path + &#x22; does not exist&#x22;);
+               failed.push(attachment.path + " does not exist");
          }
          else if(attachment.stream)
          {
             if(!attachment.stream.readable)
-               failed.push(&#x22;attachment stream is not readable&#x22;);
+               failed.push("attachment stream is not readable");
          }
          else if(!attachment.data)
          {
-            failed.push(&#x22;attachment has no data associated with it&#x22;);
+            failed.push("attachment has no data associated with it");
          }
       });
 
-      callback(failed.length === 0, failed.join(&#x22;, &#x22;));
+      callback(failed.length === 0, failed.join(", "));
    }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -7045,17 +7038,17 @@ notify();
 {
 <span class="apidocCodeCommentSpan">   /*
       legacy support, will remove eventually...
-      arguments -&#x3e; (path, type, name, headers)
+      arguments -&gt; (path, type, name, headers)
    */
-</span>   if (arguments.length &#x3e; 1)
+</span>   if (arguments.length &gt; 1)
      options = {path:options, type:arguments[1], name:arguments[2]};
 
    // sender can specify an attachment as an alternative
    if(options.alternative)
    {
       this.alternative           = options;
-      this.alternative.charset   = options.charset || &#x22;utf-8&#x22;;
-      this.alternative.type      = options.type || &#x22;text/html&#x22;;
+      this.alternative.charset   = options.charset || "utf-8";
+      this.alternative.type      = options.type || "text/html";
       this.alternative.inline    = true;
    }
    else
@@ -7085,8 +7078,8 @@ notify();
    this.alternative =
    {
       data:    html,
-      charset: charset || &#x22;utf-8&#x22;,
-      type:    &#x22;text/html&#x22;,
+      charset: charset || "utf-8",
+      type:    "text/html",
       inline:  true
    };
 
@@ -7111,7 +7104,7 @@ notify();
     <ul>
     <li>description and source-code<pre class="apidocCodePre">read = function (callback)
 {
-   var buffer = &#x22;&#x22;;
+   var buffer = "";
 
    var capture = function(data)
    {
@@ -7125,14 +7118,14 @@ notify();
 
    var str = this.stream();
 
-   str.on(&#x27;data&#x27;, capture);
-   str.on(&#x27;end&#x27;, output);
-   str.on(&#x27;error&#x27;, output);
+   str.on('data', capture);
+   str.on('end', output);
+   str.on('error', output);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
   {
     stream.end();
-    stream.emit(&#x27;response&#x27;, SMTPError(&#x27;timedout while connecting to smtp server&#x27;, SMTPError.TIMEDOUT, err));
+    stream.emit('response', SMTPError('timedout while connecting to smtp server', SMTPError.TIMEDOUT, err));
   },
 
   watch = function(data)
@@ -7189,11 +7182,11 @@ notify();
 
    if(!self.header.from)
    {
-      callback(false, &#x22;message does not have a valid sender&#x22;);
+      callback(false, "message does not have a valid sender");
    }
    if(!(self.header.to || self.header.cc || self.header.bcc))
    {
-      callback(false, &#x22;message does not have a valid recipient&#x22;);
+      callback(false, "message does not have a valid recipient");
    }
    else if(self.attachments.length === 0)
    {
@@ -7208,22 +7201,22 @@ notify();
       {
          if(attachment.path)
          {
-            // migrating path-&#x3e;fs for existsSync)
+            // migrating path-&gt;fs for existsSync)
             if(!(fs.existsSync || path.existsSync)(attachment.path))
-               failed.push(attachment.path + &#x22; does not exist&#x22;);
+               failed.push(attachment.path + " does not exist");
          }
          else if(attachment.stream)
          {
             if(!attachment.stream.readable)
-               failed.push(&#x22;attachment stream is not readable&#x22;);
+               failed.push("attachment stream is not readable");
          }
          else if(!attachment.data)
          {
-            failed.push(&#x22;attachment has no data associated with it&#x22;);
+            failed.push("attachment has no data associated with it");
          }
       });
 
-      callback(failed.length === 0, failed.join(&#x22;, &#x22;));
+      callback(failed.length === 0, failed.join(", "));
    }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -7318,11 +7311,11 @@ notify();
 ## EXAMPLE USAGE - text only emails
 
 ```javascript
-var email 	= require(&#x22;./path/to/emailjs/email&#x22;);
+var email 	= require("./path/to/emailjs/email");
 var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
@@ -7449,8 +7442,8 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_isAttachmentInlinedHtml = function (attachment) {
-	   return attachment &#x26;&#x26;
-		  (attachment.data || attachment.path) &#x26;&#x26;
+	   return attachment &amp;&amp;
+		  (attachment.data || attachment.path) &amp;&amp;
 		   attachment.alternative === true;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -7476,7 +7469,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
       if(self.smtp.state() == smtp.state.NOTCONNECTED)
          self._connect(self.queue[0]);
 
-      else if(self.smtp.state() == smtp.state.CONNECTED &#x26;&#x26; !self.sending &#x26;&#x26; self.ready)
+      else if(self.smtp.state() == smtp.state.CONNECTED &amp;&amp; !self.sending &amp;&amp; self.ready)
          self._sendmail(self.queue.shift());
    }
    // wait around 1 seconds in case something does come in, otherwise close out SMTP connection if still open
@@ -7536,7 +7529,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
    var self = this;
    var from = stack.returnPath || stack.from;
    self.sending = true;
-   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), &#x27;&#x3c;&#x27; + from + &#x27;&#x3e;&#x27;);
+   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), '&lt;' + from + '&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7554,12 +7547,12 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
 {
    var self = this, stream = stack.message.stream();
 
-   stream.on(&#x27;data&#x27;, function(data) { self.smtp.message(data); });
-   stream.on(&#x27;end&#x27;, function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
+   stream.on('data', function(data) { self.smtp.message(data); });
+   stream.on('end', function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
 
    // there is no way to cancel a message while in the DATA portion, so we have to close the socket to prevent
    // a bad email from going out
-   stream.on(&#x27;error&#x27;, function(err) { self.smtp.close(); self._senddone(err, stack); });
+   stream.on('error', function(err) { self.smtp.close(); self._senddone(err, stack); });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7576,7 +7569,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     <li>description and source-code<pre class="apidocCodePre">_sendrcpt = function (stack)
 {
    var self = this, to = stack.to.shift().address;
-   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), &#x27;&#x3c;&#x27;+ to +&#x27;&#x3e;&#x27;);
+   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), '&lt;'+ to +'&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7595,7 +7588,7 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
    var self   = this;
    var check= function(err)
    {
-      if(!err &#x26;&#x26; next)
+      if(!err &amp;&amp; next)
       {
          next.apply(self, [stack]);
       }
@@ -7626,9 +7619,9 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
    var self = this;
 
    if(!(msg instanceof message.Message)
-       &#x26;&#x26; msg.from
-       &#x26;&#x26; (msg.to || msg.cc || msg.bcc)
-       &#x26;&#x26; (msg.text || this._containsInlinedHtml(msg.attachment)))
+       &amp;&amp; msg.from
+       &amp;&amp; (msg.to || msg.cc || msg.bcc)
+       &amp;&amp; (msg.text || this._containsInlinedHtml(msg.attachment)))
       msg = message.create(msg);
 
    if(msg instanceof message.Message)
@@ -7651,8 +7644,8 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
             if(msg.header.bcc)
                stack.to = stack.to.concat(addressparser(msg.header.bcc));
 
-            if(msg.header[&#x27;return-path&#x27;] &#x26;&#x26; addressparser(msg.header[&#x27;return-path&#x27;]).length)
-              stack.returnPath = addressparser(msg.header[&#x27;return-path&#x27;])[0].address;
+            if(msg.header['return-path'] &amp;&amp; addressparser(msg.header['return-path']).length)
+              stack.returnPath = addressparser(msg.header['return-path'])[0].address;
 
             self.queue.push(stack);
             self._poll();
@@ -7662,22 +7655,22 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
       });
    }
    else
-      callback(new Error(&#x22;message is not a valid Message instance&#x22;), msg);
+      callback(new Error("message is not a valid Message instance"), msg);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
 // send the message and get a callback with an error or details of the message that was sent
 server.<span class="apidocCodeKeywordSpan">send</span>({
-   text:    &#x22;i hope this works&#x22;,
-   from:    &#x22;you &#x3c;username@your-email.com&#x3e;&#x22;,
-   to:      &#x22;someone &#x3c;someone@your-email.com&#x3e;, another &#x3c;another@your-email.com&#x3e;&#x22;,
-   cc:      &#x22;else &#x3c;else@your-email.com&#x3e;&#x22;,
-   subject: &#x22;testing emailjs&#x22;
+   text:    "i hope this works",
+   from:    "you &lt;username@your-email.com&gt;",
+   to:      "someone &lt;someone@your-email.com&gt;, another &lt;another@your-email.com&gt;",
+   cc:      "else &lt;else@your-email.com&gt;",
+   subject: "testing emailjs"
 }, function(err, message) { console.log(err || message); });
 ```
 ...</pre></li>
@@ -7785,8 +7778,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_isAttachmentInlinedHtml = function (attachment) {
-	   return attachment &#x26;&#x26;
-		  (attachment.data || attachment.path) &#x26;&#x26;
+	   return attachment &amp;&amp;
+		  (attachment.data || attachment.path) &amp;&amp;
 		   attachment.alternative === true;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -7817,7 +7810,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       if(self.smtp.state() == smtp.state.NOTCONNECTED)
          self._connect(self.queue[0]);
 
-      else if(self.smtp.state() == smtp.state.CONNECTED &#x26;&#x26; !self.sending &#x26;&#x26; self.ready)
+      else if(self.smtp.state() == smtp.state.CONNECTED &amp;&amp; !self.sending &amp;&amp; self.ready)
          self._sendmail(self.queue.shift());
    }
    // wait around 1 seconds in case something does come in, otherwise close out SMTP connection if still open
@@ -7892,7 +7885,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    var self = this;
    var from = stack.returnPath || stack.from;
    self.sending = true;
-   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), &#x27;&#x3c;&#x27; + from + &#x27;&#x3e;&#x27;);
+   self.smtp.mail(self._sendsmtp(stack, self._sendrcpt), '&lt;' + from + '&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7915,12 +7908,12 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 {
    var self = this, stream = stack.message.stream();
 
-   stream.on(&#x27;data&#x27;, function(data) { self.smtp.message(data); });
-   stream.on(&#x27;end&#x27;, function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
+   stream.on('data', function(data) { self.smtp.message(data); });
+   stream.on('end', function() { self.smtp.data_end(self._sendsmtp(stack, function() { self._senddone(null, stack) })); });
 
    // there is no way to cancel a message while in the DATA portion, so we have to close the socket to prevent
    // a bad email from going out
-   stream.on(&#x27;error&#x27;, function(err) { self.smtp.close(); self._senddone(err, stack); });
+   stream.on('error', function(err) { self.smtp.close(); self._senddone(err, stack); });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7942,7 +7935,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
     <li>description and source-code<pre class="apidocCodePre">_sendrcpt = function (stack)
 {
    var self = this, to = stack.to.shift().address;
-   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), &#x27;&#x3c;&#x27;+ to +&#x27;&#x3e;&#x27;);
+   self.smtp.rcpt(self._sendsmtp(stack, stack.to.length ? self._sendrcpt : self._senddata), '&lt;'+ to +'&gt;');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -7966,7 +7959,7 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    var self   = this;
    var check= function(err)
    {
-      if(!err &#x26;&#x26; next)
+      if(!err &amp;&amp; next)
       {
          next.apply(self, [stack]);
       }
@@ -8002,9 +7995,9 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
    var self = this;
 
    if(!(msg instanceof message.Message)
-       &#x26;&#x26; msg.from
-       &#x26;&#x26; (msg.to || msg.cc || msg.bcc)
-       &#x26;&#x26; (msg.text || this._containsInlinedHtml(msg.attachment)))
+       &amp;&amp; msg.from
+       &amp;&amp; (msg.to || msg.cc || msg.bcc)
+       &amp;&amp; (msg.text || this._containsInlinedHtml(msg.attachment)))
       msg = message.create(msg);
 
    if(msg instanceof message.Message)
@@ -8027,8 +8020,8 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
             if(msg.header.bcc)
                stack.to = stack.to.concat(addressparser(msg.header.bcc));
 
-            if(msg.header[&#x27;return-path&#x27;] &#x26;&#x26; addressparser(msg.header[&#x27;return-path&#x27;]).length)
-              stack.returnPath = addressparser(msg.header[&#x27;return-path&#x27;])[0].address;
+            if(msg.header['return-path'] &amp;&amp; addressparser(msg.header['return-path']).length)
+              stack.returnPath = addressparser(msg.header['return-path'])[0].address;
 
             self.queue.push(stack);
             self._poll();
@@ -8038,22 +8031,22 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
       });
    }
    else
-      callback(new Error(&#x22;message is not a valid Message instance&#x22;), msg);
+      callback(new Error("message is not a valid Message instance"), msg);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
 // send the message and get a callback with an error or details of the message that was sent
 server.<span class="apidocCodeKeywordSpan">send</span>({
-   text:    &#x22;i hope this works&#x22;,
-   from:    &#x22;you &#x3c;username@your-email.com&#x3e;&#x22;,
-   to:      &#x22;someone &#x3c;someone@your-email.com&#x3e;, another &#x3c;another@your-email.com&#x3e;&#x22;,
-   cc:      &#x22;else &#x3c;else@your-email.com&#x3e;&#x22;,
-   subject: &#x22;testing emailjs&#x22;
+   text:    "i hope this works",
+   from:    "you &lt;username@your-email.com&gt;",
+   to:      "someone &lt;someone@your-email.com&gt;, another &lt;another@your-email.com&gt;",
+   cc:      "else &lt;else@your-email.com&gt;",
+   subject: "testing emailjs"
 }, function(err, message) { console.log(err || message); });
 ```
 ...</pre></li>
@@ -8084,11 +8077,11 @@ server.<span class="apidocCodeKeywordSpan">send</span>({
 ## EXAMPLE USAGE - text only emails
 
 ```javascript
-var email 	= require(&#x22;./path/to/emailjs/email&#x22;);
+var email 	= require("./path/to/emailjs/email");
 var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
-   user:    &#x22;username&#x22;,
-   password:&#x22;password&#x22;,
-   host:    &#x22;smtp.your-email.com&#x22;,
+   user:    "username",
+   password:"password",
+   host:    "smtp.your-email.com",
    ssl:     true
 });
 
@@ -8105,3 +8098,4 @@ var server 	= email.server.<span class="apidocCodeKeywordSpan">connect</span>({
     ]
 </div>
 </div>
+</body></html>

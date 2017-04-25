@@ -10,7 +10,7 @@
 <tspan x="10" y="122">  ├─┬ mimelib@0.2.14 </tspan>
 <tspan x="10" y="138">  │ ├── addressparser@0.2.1 </tspan>
 <tspan x="10" y="154">  │ └─┬ encoding@0.1.12 </tspan>
-<tspan x="10" y="170">  │   └── iconv-lite@0.4.15 </tspan>
+<tspan x="10" y="170">  │   └── iconv-lite@0.4.16 </tspan>
 <tspan x="10" y="186">  ├── moment@2.11.2 </tspan>
 <tspan x="10" y="202">  └── starttls@1.0.1</tspan>
 </text>
